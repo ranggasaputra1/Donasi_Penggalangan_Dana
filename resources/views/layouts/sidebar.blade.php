@@ -47,7 +47,7 @@
                 </a>
             </li>
             <li class="sidebar-item {{ request()->is('admin/penggalang-dana*') ? 'active' : '' }}">
-                <a href="/admin/penggalang-dana/penggalang-dana" class="sidebar-link">
+                <a href="/admin/penggalang-dana/kuisioner" class="sidebar-link">
                     <i class="bi bi-person-hearts"></i>
                     <span>Penggalang Dana</span>
                 </a>

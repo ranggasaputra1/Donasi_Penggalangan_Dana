@@ -1,20 +1,21 @@
 <?php
 
-use App\Http\Controllers\LandingController;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\DonaturController;
-use App\Http\Controllers\CampaignController;
-use App\Http\Controllers\TransaksiController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BlogController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\DonaturController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\PegawaiController;
-use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\CampaignController;
+use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KuisionerController;
 use App\Http\Controllers\SocialiteController;
+use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\AdminKuisionerController;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\VerifikasiAkunController;
 use App\Http\Controllers\MidtransCallbackController;
-use Illuminate\Support\Facades\Route;
-
 
 
 /*
@@ -58,6 +59,12 @@ Route::get('/verifikasi/{token}', [VerifikasiAkunController::class, "verifikasia
 /* Callback Midtrans */
 Route::post('/transaksi/callback', [MidtransCallbackController::class, 'receive']);
 
+
+
+Route::get('/kuisioner', [KuisionerController::class, 'form']);
+Route::post('/kuisioner', [KuisionerController::class, 'submit']);
+
+
 /* Dashboard Admin */
 Route::group(['middleware' => ['auth', 'role:0']], function () {
     /* Dashboard Admin */
@@ -65,11 +72,22 @@ Route::group(['middleware' => ['auth', 'role:0']], function () {
     Route::get('/admin/profil', [DashboardController::class, "profileadmin"]);
     Route::post('/admin/profil-update', [DashboardController::class, "updateprofileadmin"]);
     Route::post('/admin/password-update', [DashboardController::class, "updatepasswordadmin"]);
-    /* Admin Data User */
-    Route::get('/admin/donatur', [DonaturController::class, "donatur"]);
+    
+   Route::get('/admin/donatur', [DonaturController::class, 'donatur']);
+    Route::get('/admin/donatur/detail/{id}', [DonaturController::class, 'detail']);
+    Route::get('/admin/donatur/edit/{id}', [DonaturController::class, 'edit']);
+    Route::post('/admin/donatur/update', [DonaturController::class, 'update']);
+    Route::post('/admin/donatur/hapus', [DonaturController::class, 'hapus']);
+
+
+    Route::post('/admin/donatur/hapus', [DonaturController::class, 'hapus']);
     Route::get('/admin/pegawai', [PegawaiController::class, "pegawai"]);
-    Route::get('/admin/penggalang-dana/penggalang-dana', [DonaturController::class, "penggalangdana"]);
-    Route::get('/admin/penggalang-dana/verifikasi-akun', [DonaturController::class, "verifikasiakun"]);
+
+    Route::get('/admin/penggalang-dana/kuisioner', [AdminKuisionerController::class, 'index']);
+    Route::get('/admin/penggalang-dana/kuisioner/acc/{id}/{status}', [AdminKuisionerController::class, 'acc']);
+    Route::get('/admin/penggalang-dana/kuisioner/detail/{id}', [AdminKuisionerController::class, 'detail']);
+
+    
     Route::post('/admin/penggalang-dana/edit-status-verifikasi-akun', [VerifikasiAkunController::class, "editstatusverifikasi"]);
     Route::post('/admin/pegawai/tambah-pegawai', [PegawaiController::class, "tambahpegawai"]);
     Route::post('/admin/pegawai/hapus-pegawai', [PegawaiController::class, "deletepegawai"]);
