@@ -8,7 +8,7 @@
         <div class="page-title">
             <div class="row">
                 <div class="col-12 col-md-6 order-md-1 order-last">
-                    <h3>Data Campaign</h3>
+                    <h3>Postingan Donasi</h3>
                 </div>
             </div>
         </div>
@@ -30,7 +30,7 @@
         <!-- Basic Tables start -->
         <section class="section">
             <div class="card">
-                <div class="card-header d-flex justify-content-between">Data Campaign
+                <div class="card-header d-flex justify-content-between">Postingan Donasi
                 </div>
                 <div class="card-body">
                     <table class="table" id="table1">
@@ -94,8 +94,7 @@
                                                     <i data-feather="x"></i>
                                                 </button>
                                             </div>
-                                            <form action="/admin/campaign/campaign/edit-status-campaign"
-                                                method="POST">
+                                            <form action="/admin/campaign/campaign/edit-status-campaign" method="POST">
                                                 @csrf
                                                 <div class="modal-body">
                                                     <label>Edit Status</label>

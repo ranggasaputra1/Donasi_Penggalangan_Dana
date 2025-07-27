@@ -8,7 +8,7 @@
         <div class="page-title">
             <div class="row">
                 <div class="col-12 col-md-6 order-md-1 order-last">
-                    <h3>Berita Campaign</h3>
+                    <h3>Berita Postingan Donasi</h3>
                 </div>
             </div>
         </div>
@@ -30,7 +30,7 @@
         <!-- Basic Tables start -->
         <section class="section">
             <div class="card">
-                <div class="card-header d-flex justify-content-between">Berita Campaign
+                <div class="card-header d-flex justify-content-between">Berita Postingan Donasi
                     <a class="btn btn-primary" href="/admin/campaign/berita/tambah-berita">
                         <i class="bi bi-person-fill-add"></i> Tambah Berita
                     </a>

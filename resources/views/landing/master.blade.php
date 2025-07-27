@@ -99,8 +99,9 @@
                         </div>
                     @endif
                 @else
-                    <a href="/#campaign" class="nav-item px-2" style="color: #ffffff;text-decoration: none;">Campaign</a>
-                    <a href="/blog" class="nav-item px-2" style="color: #ffffff;text-decoration: none;">Blog</a>
+                    <a href="/" class="nav-item px-2" style="color: #ffffff;text-decoration: none;">Home</a>
+                    <a href="/blog" class="nav-item px-2" style="color: #ffffff;text-decoration: none;">Halaman
+                        Artikel</a>
                     <a href="/login" class="nav-item px-2" style="color: #ffffff;text-decoration: none;">Login</a>
                 @endauth
                 <form class="ms-auto d-flex" role="search">
@@ -130,13 +131,11 @@
                                 style="height: 50px"></a>
                     </div>
                     <div class="col mx-1">
-                        <a
-                            @auth href="/donasi-saya" @else data-bs-toggle="modal" data-bs-target="#profile" @endauth><img
+                        <a @auth href="/donasi-saya" @else data-bs-toggle="modal" data-bs-target="#profile" @endauth><img
                                 src="/assets/img/donation.png" alt="" style="height: 50px"></a>
                     </div>
                     <div class="col mx-1">
-                        <a
-                            @auth href="/campaign-saya" @else data-bs-toggle="modal" data-bs-target="#profile" @endauth><img
+                        <a @auth href="/campaign-saya" @else data-bs-toggle="modal" data-bs-target="#profile" @endauth><img
                                 src="/assets/img/campaign.png" alt="" style="height: 50px"></a>
                     </div>
                     <div class="col mx-1">

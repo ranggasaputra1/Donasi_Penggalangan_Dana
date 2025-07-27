@@ -4,8 +4,10 @@
 @endsection
 @section('content')
     <section id="item" style="background-color: rgb(255, 255, 255);" class="item my-3 " data-filter="item">
-        <div class="container p-4">
-            <h3 style="font-weight:bold; color: #435ebe;">Selamat Datang !</h3>
+        <div class="container p-4"> <br>
+            <center>
+                <h3 style="font-weight:bold; color: #435ebe;">Selamat Datang !</h3>
+            </center> <br>
             <a href="#" data-bs-toggle="modal" data-bs-target="#createcampaign" style="text-decoration: none;">
                 <div class="hvr-grow shadow mt-3 d-flex align-items-center"
                     style="height: 250px; border-radius:25px; background-image: linear-gradient(to right, #435ebe, rgba(231, 231, 231, 0.5)), url('https://images.unsplash.com/photo-1516570161787-2fd917215a3d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80'); background-size: cover;">
@@ -136,7 +138,10 @@
     </section>
 
     <section data-filter="item" id="item" style="background-color: rgb(255, 255, 255);" class="item my-3 py-3">
-        <div class="container text-center">
+        <div class="container text-center"> <br>
+            <center>
+                <h5 class="p-3" style="font-weight:bold; color: #435ebe;">Kategori Penggalangan Dana</h5>
+            </center> <br>
             <div class="row p-4" style="font-size:medium">
                 <a href="/kategori/pendidikan" class="col hvr-grow"
                     style="background-color: white; border: none; text-decoration:none; color: #000;">
@@ -160,14 +165,16 @@
                     </div>
                 </a>
             </div>
-        </div>
+        </div> <br>
     </section>
 
     <section data-filter="item" class="item splide my-3" aria-labelledby="carousel-heading" id="item"
         style="background-color: rgb(253, 253, 253);">
         <div class="container item py-4 px-2">
-            <div class="col" style="width: 75%;">
-                <h5 class="p-3" style="font-weight:bold; color: #435ebe;">Penggalangan Dana Mendesak</h5>
+            <div class="col" style="width: 100%;">
+                <center>
+                    <h5 class="p-3" style="font-weight:bold; color: #435ebe;">Penggalangan Dana Terbaru</h5>
+                </center> <br>
             </div>
             <div class="splide__track">
                 <ul class="splide__list">
@@ -188,7 +195,8 @@
                                             style="background-color:#435ebe;width:{{ ($item->dana_terkumpul / $item->target_campaign) * 100 }}%">
                                         </div>
                                     </div>
-                                    <p class="card-text mt-2">Donasi terkumpul : Rp{{ number_format($item->dana_terkumpul, 2, ',', '.') }}</p>
+                                    <p class="card-text mt-2">Donasi terkumpul :
+                                        Rp{{ number_format($item->dana_terkumpul, 2, ',', '.') }}</p>
                                     <p class="card-text">Aktif hingga :
                                         {{ date('d-m-Y', strtotime($item->tgl_akhir_campaign)) }}</p>
                                 </div>
@@ -197,7 +205,7 @@
                     @endforeach
                 </ul>
             </div>
-        </div>
+        </div><br>
     </section>
 
     <section data-filter="item" id="item" style="background-color: rgb(255, 255, 255);" class="item my-3 py-3">
@@ -253,8 +261,10 @@
 
     <section data-filter="item" id="item" style="background-color: rgb(255, 255, 255);" class="item my-3 py-3">
         <div class="container p-4">
-            <div class="col" style="width: 75%;">
-                <h5 class="p-2" style="font-weight:bold; color: #435ebe;">Artikel Terbaru</h5>
+            <div class="col" style="width: 100%;">
+                <center>
+                    <h5 class="p-3" style="font-weight:bold; color: #435ebe;">Artikel Terbaru</h5>
+                </center> <br>
             </div>
             <div class="card-group">
                 @foreach ($blog as $item)

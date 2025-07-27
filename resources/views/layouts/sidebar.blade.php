@@ -46,59 +46,50 @@
                     <span>Dashboard</span>
                 </a>
             </li>
-            <li class="sidebar-item {{ request()->is('admin/donatur') ? 'active' : '' }}">
-                <a href="/admin/donatur" class='sidebar-link'>
-                    <i class="bi bi-people-fill"></i>
-                    <span>Donatur</span>
-                </a>
-            </li>
-            <li class="sidebar-item {{ request()->is('admin/pegawai') ? 'active' : '' }}">
-                <a href="/admin/pegawai" class='sidebar-link'>
-                    <i class="bi bi-person-fill-check"></i>
-                    <span>Pegawai</span>
-                </a>
-            </li>
-            <li class="sidebar-item has-sub {{ request()->is('admin/penggalang-dana*') ? 'active' : '' }}">
-                <a href="#" class="sidebar-link">
+            <li class="sidebar-item {{ request()->is('admin/penggalang-dana*') ? 'active' : '' }}">
+                <a href="/admin/penggalang-dana/penggalang-dana" class="sidebar-link">
                     <i class="bi bi-person-hearts"></i>
                     <span>Penggalang Dana</span>
                 </a>
-                <ul class="submenu">
-                    <li class="submenu-item">
-                        <a href="/admin/penggalang-dana/penggalang-dana">Penggalang Dana</a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="/admin/penggalang-dana/verifikasi-akun">Verifikasi Akun</a>
-                    </li>
-                </ul>
             </li>
-            <li class="sidebar-item has-sub {{ request()->is('admin/campaign*') ? 'active' : '' }}">
+            <li
+                class="sidebar-item has-sub {{ request()->is('admin/campaign*') || request()->is('admin/artikel-blog') ? 'active' : '' }}">
                 <a href="#" class="sidebar-link">
-                    <i class="bi bi-bullseye"></i>
-                    <span>Campaign</span>
+                    <i class="bi bi-heart-fill"></i>
+                    <span>Program Kebaikan</span>
                 </a>
                 <ul class="submenu">
-                    <li class="submenu-item">
-                        <a href="/admin/campaign/campaign">Campaign</a>
+                    <li class="submenu-item {{ request()->is('admin/campaign/campaign') ? 'active' : '' }}">
+                        <a href="/admin/campaign/campaign">Postingan Donasi</a>
                     </li>
-                    <li class="submenu-item">
+                    <li class="submenu-item {{ request()->is('admin/campaign/berita') ? 'active' : '' }}">
                         <a href="/admin/campaign/berita">Berita</a>
                     </li>
-                    <li class="submenu-item">
+                    <li class="submenu-item {{ request()->is('admin/campaign/kategori') ? 'active' : '' }}">
                         <a href="/admin/campaign/kategori">Kategori</a>
+                    </li>
+                    <li class="submenu-item {{ request()->is('admin/artikel-blog') ? 'active' : '' }}">
+                        <a href="/admin/artikel-blog">Halaman Artikel</a>
                     </li>
                 </ul>
             </li>
+
             <li class="sidebar-item {{ request()->is('admin/transaksi-donasi') ? 'active' : '' }}">
                 <a href="/admin/transaksi-donasi" class='sidebar-link'>
                     <i class="bi bi-wallet-fill"></i>
                     <span>Transaksi Donasi</span>
                 </a>
             </li>
-            <li class="sidebar-item {{ request()->is('admin/artikel-blog') ? 'active' : '' }}">
-                <a href="/admin/artikel-blog" class='sidebar-link'>
-                    <i class="bi bi-archive-fill"></i>
-                    <span>Artikel Blog</span>
+            <li class="sidebar-item {{ request()->is('#') ? 'active' : '' }}">
+                <a href="#" class='sidebar-link'>
+                    <i class="bi bi-clock-history"></i>
+                    <span>Riwayat Donasi</span>
+                </a>
+            </li>
+            <li class="sidebar-item {{ request()->is('admin/donatur') ? 'active' : '' }}">
+                <a href="/admin/donatur" class='sidebar-link'>
+                    <i class="bi bi-person-heart"></i>
+                    <span>Donatur</span>
                 </a>
             </li>
         </ul>

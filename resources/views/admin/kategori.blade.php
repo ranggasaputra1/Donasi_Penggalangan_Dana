@@ -8,7 +8,7 @@
         <div class="page-title">
             <div class="row">
                 <div class="col-12 col-md-6 order-md-1 order-last">
-                    <h3>Kategori Campaign</h3>
+                    <h3>Kategori Postingan Donasi</h3>
                 </div>
             </div>
         </div>
@@ -36,7 +36,7 @@
         <!-- Basic Tables start -->
         <section class="section">
             <div class="card">
-                <div class="card-header d-flex justify-content-between">Kategori Campaign
+                <div class="card-header d-flex justify-content-between">Kategori Postingan Donasi
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahkategori">
                         <i class="bi bi-person-fill-add"></i> Tambah Kategori
                     </button>
