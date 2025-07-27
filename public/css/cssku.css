@@ -1,0 +1,116 @@
+.banner{
+    height: 80vh;
+    background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1596272875729-ed2ff7d6d9c5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80');
+    background-size: cover;
+    background-position: center;
+  }
+  .banner-content{
+    height: 100%;
+    display: flex;
+    color: white;
+    justify-content: center;
+    align-items: center;
+  }
+  .fb{
+      height: 100%;
+      background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1553688738-a278b9f063e0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80');
+      background-size: cover;
+      background-position: center;
+  }
+  .fb-parallax{
+      height: 100%;
+      background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1553688738-a278b9f063e0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80');
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+  }
+  .fb-content{
+    height: 100%;
+    display: flex;
+    color: white;
+    justify-content: center;
+    align-items: center;
+  }
+  .parallax {
+  /* The image used */
+  background-image: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url("https://images.unsplash.com/photo-1596272875729-ed2ff7d6d9c5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80");
+
+  /* Set a specific height */
+  min-height: 98vh;
+
+  /* Create the parallax scrolling effect */
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  }
+
+  .parallax-consultation{
+    /* The image used */
+    background-image: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url("https://images.unsplash.com/photo-1597214840472-aa1eaf0e1fac?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1172&q=80");
+  
+    /* Set a specific height */
+    min-height: 80vh;
+  
+    /* Create the parallax scrolling effect */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    }
+
+  .darken-image{
+    filter: brightness(75%);
+  }
+  .txt-shadow{
+    text-shadow: 1px 1px 2px black;
+  }
+  .centering{
+    display: flex;
+    justify-content: center;
+  }
+  .righting{
+    display: flex;
+    justify-content: right;
+  }
+  .lefting{
+    display: flex;
+    justify-content: left;
+  }
+  .kotak-biru{
+    width: fit-content;
+    height: fit-content;
+    padding-left: 3%;
+    padding-right: 3%;
+    border-radius: 10px;
+    background-color: #323D51;
+    display: flex;
+    justify-content: center;
+    -webkit-text-stroke: 0.8px white;
+  }
+  .kotak-sm-biru{
+    color: white;
+    width: fit-content;
+    height: 1.5vh;
+    padding-left: 3%;
+    padding-right: 3%;
+    background-color: #323D51;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-text-stroke: 1.5px #D3AC2B;
+  }
+  .bg-nav{
+    background-color: #323D51;
+  }
+  .bg-contact{
+    background-image: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url("https://images.unsplash.com/photo-1616492355586-6634b6d22c42?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1157&q=80");
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  .black-txt-shadow{
+    text-shadow: 0 0 1em black, 0 0 0.2em black;
+  }

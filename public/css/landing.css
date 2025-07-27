@@ -1,0 +1,91 @@
+.item {
+    display: block;
+}
+
+/* Menyembunyikan navbar di tampilan desktop */
+@media (min-width: 768px) {
+    .dekstop {
+        display: block;
+    }
+
+    .mobile {
+        display: none;
+    }
+}
+
+/* Menampilkan navbar di tampilan mobile */
+@media (max-width: 767px) {
+    .dekstop {
+        display: none;
+    }
+
+    .mobile {
+        display: block;
+    }
+}
+
+.container-input {
+    position: relative;
+}
+
+.input {
+    width: 150px;
+    padding: 10px 0px 10px 40px;
+    border-radius: 9999px;
+    border: solid 1px #435ebe;
+    transition: all .2s ease-in-out;
+    outline: none;
+    opacity: 1;
+}
+
+.container-input svg {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translate(0, -50%);
+}
+
+.input:focus {
+    opacity: 1;
+    width: 250px;
+}
+
+.splide__arrow {
+    background-color: #435ebe;
+    opacity: 100%;
+}
+
+.splide__arrow svg {
+    fill: #fff
+}
+
+.splide__pagination__page.is-active {
+    background-color: #435ebe;
+    opacity: 100%;
+}
+
+figure img {
+    width: 100%;
+}
+
+.pagination>li>a,
+.pagination>li>span {
+    color: #000 !important;
+}
+
+.pagination>.active>a,
+.pagination>.active>a:focus,
+.pagination>.active>a:hover,
+.pagination>.active>span,
+.pagination>.active>span:focus,
+.pagination>.active>span:hover {
+    background-color: #435ebe !important;
+    border-color: #435ebe !important;
+    color: #fff !important;
+}
+
+.dropdown-item:active {
+    color: #fff;
+    text-decoration: none;
+    background-color: #435ebe;
+}
