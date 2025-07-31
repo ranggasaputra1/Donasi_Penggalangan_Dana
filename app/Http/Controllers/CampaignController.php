@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use App\Models\Berita;
 use App\Models\Campaign;
 use App\Models\Kategori;
-use App\Models\Berita;
 use Illuminate\Http\Request;
-use App\Models\KuisionerPenggalangDana;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Models\KuisionerPenggalangDana;
 
 class CampaignController extends Controller
 {
     // Menampilkan daftar campaign
     public function campaign()
     {
-        $campaign = Campaign::all();
+        $campaign = Campaign::with('category', 'user')->get();  // Mengambil data campaign dengan relasi kategori dan user
         $categories = Kategori::all();  // Ambil kategori untuk form
         $penggalangDanas = KuisionerPenggalangDana::all(); // Ambil data penggalang dana yang sudah mengisi kuisioner
         return view('admin.campaign', [
@@ -34,14 +34,16 @@ class CampaignController extends Controller
             'judul_campaign' => 'required|string',
             'category_id' => 'required|exists:kategoris,id',
             'deskripsi_campaign' => 'required',
-            'target_campaign' => 'required|numeric',
-            'tgl_akhir' => 'required|date',
             'foto_campaign' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'penggalang_dana_id' => 'required|exists:kuisioner_penggalang_danas,id', // Menambahkan validasi penggalang dana
         ]);
 
         // Menyimpan foto campaign
         $imageName = time() . '.' . $request->foto_campaign->extension();
         $request->foto_campaign->move(public_path('storage/images/campaign'), $imageName);
+
+        // Ambil data penggalang dana
+        $penggalangDana = KuisionerPenggalangDana::findOrFail($request->penggalang_dana_id);
 
         // Menyimpan campaign
         Campaign::create([
@@ -55,6 +57,15 @@ class CampaignController extends Controller
             'tgl_akhir_campaign' => $request->tgl_akhir,
             'target_campaign' => $request->target_campaign,
             'status_campaign' => 0, // Pending
+            'penggalang_dana_id' => $request->penggalang_dana_id,
+            'kategori_pengajuan' => $penggalangDana->kategori_pengajuan,
+            'jumlah_dana_dibutuhkan' => $penggalangDana->jumlah_dana_dibutuhkan,
+            'jumlah_tanggungan_keluarga' => $penggalangDana->jumlah_tanggungan_keluarga,
+            'pekerjaan' => $penggalangDana->pekerjaan,
+            'kondisi_kesehatan' => $penggalangDana->kondisi_kesehatan,
+            'kebutuhan_mendesak' => $penggalangDana->kebutuhan_mendesak,
+            'lama_pengajuan' => $penggalangDana->lama_pengajuan,
+            'status_korban' => $penggalangDana->status_korban,
         ]);
 
         return redirect('/admin/campaign/campaign')->with('message', 'Postingan Donasi berhasil ditambahkan');
@@ -94,28 +105,15 @@ class CampaignController extends Controller
         ]);
     }
 
-
- public function getPenggalangDanaData($id)
-{
-    // Ambil data penggalang dana berdasarkan ID
-    $penggalangDana = KuisionerPenggalangDana::findOrFail($id);
-
-    // Mengembalikan data ke frontend dalam format JSON
-    return response()->json($penggalangDana);
-}
-
-
-
-    // Halaman untuk berita campaign
-    public function news()
+    public function getPenggalangDanaData($id)
     {
-        $news = Berita::with('user')->get();
-        return view('admin.berita', [
-            'title' => 'Berita Campaign - We Care',
-            'news'  => $news,
-        ]);
-    }
+        // Ambil data penggalang dana berdasarkan ID
+        $penggalangDana = KuisionerPenggalangDana::findOrFail($id);
 
+        // Mengembalikan data ke frontend dalam format JSON
+        return response()->json($penggalangDana);
+    }
+    
     // Menambah berita campaign
     public function tambahnews()
     {

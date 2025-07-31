@@ -92,7 +92,6 @@
                             <input type="text" class="form-control" id="judul_campaign" name="judul_campaign" required>
                         </div>
 
-
                         <!-- Pilih Penggalang Dana -->
                         <div class="mb-3">
                             <label for="penggalang_dana_id" class="form-label">Pilih Penggalang Dana</label>
@@ -151,7 +150,7 @@
 
                         <!-- Foto Campaign -->
                         <div class="mb-3">
-                            <label for="foto_campaign" class="form-label">Foto Campaign</label>
+                            <label for="foto_campaign" class="form-label">Foto Postingan Donasi</label>
                             <input type="file" class="form-control" id="foto_campaign" name="foto_campaign" required>
                         </div>
 
