@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Kuisioner - We Care</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/jquery-mask-plugin@1.14.15/dist/jquery.mask.min.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #f0f4ff, #ffffff);
@@ -86,7 +87,7 @@
 
                 <!-- Nomor KTP -->
                 <div class="mb-3">
-                    <label class="form-label">Nomor KTP</label>
+                    <label class="form-label">Nomor KTP (hanya angka)</label>
                     <input type="text" name="ktp" class="form-control" value="{{ old('ktp') }}" required>
                     @error('ktp')
                         <small class="text-danger">{{ $message }}</small>
@@ -95,7 +96,7 @@
 
                 <!-- Nomor Rekening -->
                 <div class="mb-3">
-                    <label class="form-label">Nomor Rekening</label>
+                    <label class="form-label">Nomor Rekening (hanya angka)</label>
                     <input type="text" name="no_rekening" class="form-control" value="{{ old('no_rekening') }}"
                         required>
                     @error('no_rekening')
@@ -105,7 +106,7 @@
 
                 <!-- Nomor WhatsApp -->
                 <div class="mb-3">
-                    <label class="form-label">Nomor WhatsApp</label>
+                    <label class="form-label">Nomor WhatsApp (format: +62xxx / 08xxx)</label>
                     <input type="text" name="no_whatsapp" class="form-control" value="{{ old('no_whatsapp') }}"
                         required>
                     @error('no_whatsapp')
@@ -118,13 +119,14 @@
                     <label class="form-label">Kategori Pengajuan</label>
                     <select name="kategori_pengajuan" class="form-select" required>
                         <option value="">-- Pilih Kategori --</option>
-                        <option value="darurat" {{ old('kategori_pengajuan') == 'darurat' ? 'selected' : '' }}>Darurat
+                        <option value="darurat" {{ old('kategori_pengajuan') == 'darurat' ? 'selected' : '' }}>
+                            Kemanusiaan
                         </option>
                         <option value="pendidikan" {{ old('kategori_pengajuan') == 'pendidikan' ? 'selected' : '' }}>
-                            Pendidikan</option>
-                        <option value="kesehatan" {{ old('kategori_pengajuan') == 'kesehatan' ? 'selected' : '' }}>Kesehatan
+                            Pendidikan
                         </option>
-                        <option value="lainnya" {{ old('kategori_pengajuan') == 'lainnya' ? 'selected' : '' }}>Lainnya
+                        <option value="kesehatan" {{ old('kategori_pengajuan') == 'kesehatan' ? 'selected' : '' }}>
+                            Kesehatan
                         </option>
                     </select>
                     @error('kategori_pengajuan')
@@ -134,9 +136,9 @@
 
                 <!-- Jumlah Dana -->
                 <div class="mb-3">
-                    <label class="form-label">Jumlah Dana Dibutuhkan</label>
-                    <input type="number" name="jumlah_dana_dibutuhkan" class="form-control"
-                        value="{{ old('jumlah_dana_dibutuhkan') }}" required>
+                    <label class="form-label">Jumlah Dana Dibutuhkan (hanya angka)</label>
+                    <input type="text" name="jumlah_dana_dibutuhkan" class="form-control"
+                        value="{{ old('jumlah_dana_dibutuhkan') }}" id="jumlah_dana_dibutuhkan" required>
                     @error('jumlah_dana_dibutuhkan')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
@@ -144,7 +146,7 @@
 
                 <!-- Jumlah Tanggungan -->
                 <div class="mb-3">
-                    <label class="form-label">Jumlah Tanggungan Keluarga</label>
+                    <label class="form-label">Jumlah Tanggungan Keluarga (angka)</label>
                     <input type="number" name="jumlah_tanggungan_keluarga" class="form-control"
                         value="{{ old('jumlah_tanggungan_keluarga') }}" required>
                     @error('jumlah_tanggungan_keluarga')
@@ -154,7 +156,7 @@
 
                 <!-- Pekerjaan -->
                 <div class="mb-3">
-                    <label class="form-label">Pekerjaan</label>
+                    <label class="form-label">Pekerjaan (contoh: Buruh/ Pegawai)</label>
                     <input type="text" name="pekerjaan" class="form-control" value="{{ old('pekerjaan') }}"
                         required>
                     @error('pekerjaan')
@@ -164,7 +166,7 @@
 
                 <!-- Kondisi Kesehatan -->
                 <div class="mb-3">
-                    <label class="form-label">Kondisi Kesehatan</label>
+                    <label class="form-label">Kondisi Kesehatan (contoh: Sehat / Menderita Penyakit X)</label>
                     <input type="text" name="kondisi_kesehatan" class="form-control"
                         value="{{ old('kondisi_kesehatan') }}" required>
                     @error('kondisi_kesehatan')
@@ -176,10 +178,12 @@
                 <div class="mb-3">
                     <label class="form-label">Status Rumah</label>
                     <select name="status_rumah" class="form-select" required>
-                        <option value="milik" {{ old('status_rumah') == 'milik' ? 'selected' : '' }}>Milik Sendiri</option>
+                        <option value="milik" {{ old('status_rumah') == 'milik' ? 'selected' : '' }}>Milik Sendiri
+                        </option>
                         <option value="kontrak" {{ old('status_rumah') == 'kontrak' ? 'selected' : '' }}>Kontrak/Sewa
                         </option>
-                        <option value="numpang" {{ old('status_rumah') == 'numpang' ? 'selected' : '' }}>Numpang</option>
+                        <option value="numpang" {{ old('status_rumah') == 'numpang' ? 'selected' : '' }}>Numpang
+                        </option>
                     </select>
                     @error('status_rumah')
                         <small class="text-danger">{{ $message }}</small>
@@ -200,7 +204,7 @@
 
                 <!-- Kebutuhan Mendesak -->
                 <div class="mb-3">
-                    <label class="form-label">Apakah Kebutuhan Mendesak?</label>
+                    <label class="form-label">Kebutuhan Mendesak (contoh: Pengobatan, Pendidikan)</label>
                     <input type="text" name="kebutuhan_mendesak" class="form-control"
                         value="{{ old('kebutuhan_mendesak') }}" required>
                     @error('kebutuhan_mendesak')
@@ -220,7 +224,7 @@
 
                 <!-- Penghasilan Bulanan -->
                 <div class="mb-3">
-                    <label class="form-label">Penghasilan Bulanan</label>
+                    <label class="form-label">Penghasilan Bulanan (angka)</label>
                     <input type="number" name="penghasilan_bulanan" class="form-control"
                         value="{{ old('penghasilan_bulanan') }}" required>
                     @error('penghasilan_bulanan')
@@ -244,7 +248,8 @@
                 <div class="mb-3">
                     <label class="form-label">Status Pernikahan</label>
                     <select name="status_pernikahan" class="form-select" required>
-                        <option value="lajang" {{ old('status_pernikahan') == 'lajang' ? 'selected' : '' }}>Lajang</option>
+                        <option value="lajang" {{ old('status_pernikahan') == 'lajang' ? 'selected' : '' }}>Lajang
+                        </option>
                         <option value="menikah" {{ old('status_pernikahan') == 'menikah' ? 'selected' : '' }}>Menikah
                         </option>
                         <option value="duda/janda" {{ old('status_pernikahan') == 'duda/janda' ? 'selected' : '' }}>
@@ -267,7 +272,7 @@
 
                 <!-- Status Korban -->
                 <div class="mb-3">
-                    <label class="form-label">Status Korban (misal bencana)</label>
+                    <label class="form-label">Status Korban (contoh: korban bencana alam, kecelakaan, dll)</label>
                     <input type="text" name="status_korban" class="form-control"
                         value="{{ old('status_korban') }}" required>
                     @error('status_korban')

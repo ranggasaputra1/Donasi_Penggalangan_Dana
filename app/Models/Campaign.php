@@ -36,4 +36,8 @@ class Campaign extends Model
     {
         return $this->hasMany(Berita::class);
     }
+    public function kuisioner()
+    {
+        return $this->hasOne(KuisionerPenggalangDana::class, 'id', 'penggalang_dana_id');
+    }
 }

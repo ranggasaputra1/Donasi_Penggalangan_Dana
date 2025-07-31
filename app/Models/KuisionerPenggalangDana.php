@@ -32,4 +32,9 @@ class KuisionerPenggalangDana extends Model
         'status_korban',
         'bantuan_pemerintah',
     ];
+
+    public function campaign()
+    {
+        return $this->hasOne(Campaign::class);
+    }
 }

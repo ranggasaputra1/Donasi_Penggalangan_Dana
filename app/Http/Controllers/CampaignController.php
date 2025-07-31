@@ -3,87 +3,110 @@
 namespace App\Http\Controllers;
 
 use App\Models\Campaign;
-use Illuminate\Http\Request;
-use App\Models\Berita;
 use App\Models\Kategori;
-use App\Models\Transaksi;
+use App\Models\Berita;
+use Illuminate\Http\Request;
+use App\Models\KuisionerPenggalangDana;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
-
 class CampaignController extends Controller
 {
-    public function index($slug)
-    {
-        $campaign = Campaign::where('slug_campaign', $slug)->first();
-        $berita = Berita::where('campaign_id', $campaign->id)->latest()->get();
-        $doa = Transaksi::with('user')->where('campaign_id', $campaign->id)->where('status_transaksi', 1)->limit(3)->latest()->get();
-        if ($campaign->status_campaign == 1) {
-            return view('landing.campaign', [
-                'campaign'  => $campaign,
-                'doa' => $doa,
-                'berita' => $berita,
-            ]);
-        } else {
-            return view('errors.404');
-        }
-    }
-
-    public function berita($slug, $slugberita)
-    {
-        $campaign = Campaign::where('slug_campaign', $slug)->first();
-        $berita = Berita::where('slug_berita', $slugberita)->get();
-        if ($campaign->status_campaign == 1) {
-            return view('landing.beritacampaign', [
-                'campaign'  => $campaign,
-                'berita' => $berita,
-            ]);
-        } else {
-            return view('errors.404');
-        }
-    }
-
+    // Menampilkan daftar campaign
     public function campaign()
     {
         $campaign = Campaign::all();
+        $categories = Kategori::all();  // Ambil kategori untuk form
+        $penggalangDanas = KuisionerPenggalangDana::all(); // Ambil data penggalang dana yang sudah mengisi kuisioner
         return view('admin.campaign', [
-            'campaign'  => $campaign,
+            'campaign' => $campaign,
+            'categories' => $categories,
+            'penggalangDanas' => $penggalangDanas, // Pass data penggalang dana ke view
             'title' => 'Data Campaign - We Care',
         ]);
     }
 
-    public function lihatcampaign($id)
+    // Menambah campaign
+    public function createCampaign(Request $request)
     {
-        $campaign = Campaign::where('id', $id)->get();
-        return view('admin.lihatcampaign', [
-            'campaign'  => $campaign,
-            'title' => 'Data Campaign - We Care',
+        // Validasi input
+        $valid = $request->validate([
+            'judul_campaign' => 'required|string',
+            'category_id' => 'required|exists:kategoris,id',
+            'deskripsi_campaign' => 'required',
+            'target_campaign' => 'required|numeric',
+            'tgl_akhir' => 'required|date',
+            'foto_campaign' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
+        // Menyimpan foto campaign
+        $imageName = time() . '.' . $request->foto_campaign->extension();
+        $request->foto_campaign->move(public_path('storage/images/campaign'), $imageName);
+
+        // Menyimpan campaign
+        Campaign::create([
+            'user_id' => Auth::id(),
+            'category_id' => $request->category_id,
+            'foto_campaign' => $imageName,
+            'judul_campaign' => $request->judul_campaign,
+            'deskripsi_campaign' => $request->deskripsi_campaign,
+            'slug_campaign' => str()->slug($request->judul_campaign),
+            'tgl_mulai_campaign' => Carbon::now(),
+            'tgl_akhir_campaign' => $request->tgl_akhir,
+            'target_campaign' => $request->target_campaign,
+            'status_campaign' => 0, // Pending
+        ]);
+
+        return redirect('/admin/campaign/campaign')->with('message', 'Postingan Donasi berhasil ditambahkan');
     }
 
-    public function mycampaign()
-    {
-        $campaign = Campaign::where('user_id', Auth::user()->id)->get();
-        return view('landing.mycampaign', [
-            'campaign'  => $campaign,
-        ]);
-    }
-
+    // Mengedit status campaign
     public function editstatuscampaign(Request $request)
     {
         $valid = $request->validate([
             'id' => 'required',
-            'status' => 'required',
-        ]);
-        $id = $request->input('id');
-        $updateverifikasi = Campaign::where(['id' => $id])->update([
-            'status_campaign' => $request->input('status'),
+            'status' => 'required|in:0,1,2,3', // Status yang bisa dipilih
         ]);
 
-        return redirect('/admin/campaign/campaign')->with('message', 'Status berhasil diedit');
+        $campaign = Campaign::findOrFail($request->id);
+        $campaign->status_campaign = $request->status;
+        $campaign->save();
+
+        return redirect('/admin/campaign/campaign')->with('message', 'Status campaign berhasil diperbarui');
+    }
+
+    // Menghapus campaign
+    public function deletecampaign($id)
+    {
+        $campaign = Campaign::findOrFail($id);
+        $campaign->delete();
+
+        return redirect('/admin/campaign/campaign')->with('message', 'Postingan Donasi berhasil dihapus');
+    }
+
+    // Melihat detail campaign
+    public function lihatcampaign($id)
+    {
+        $campaign = Campaign::findOrFail($id);
+        return view('admin.lihatcampaign', [
+            'campaign' => $campaign,
+            'title' => 'Detail Campaign - We Care',
+        ]);
     }
 
 
+ public function getPenggalangDanaData($id)
+{
+    // Ambil data penggalang dana berdasarkan ID
+    $penggalangDana = KuisionerPenggalangDana::findOrFail($id);
+
+    // Mengembalikan data ke frontend dalam format JSON
+    return response()->json($penggalangDana);
+}
+
+
+
+    // Halaman untuk berita campaign
     public function news()
     {
         $news = Berita::with('user')->get();
@@ -93,6 +116,7 @@ class CampaignController extends Controller
         ]);
     }
 
+    // Menambah berita campaign
     public function tambahnews()
     {
         $campaign = Campaign::with('user')->get();
@@ -102,31 +126,7 @@ class CampaignController extends Controller
         ]);
     }
 
-    public function editnews($id)
-    {
-        $berita = Berita::where(['id' => $id])->get();
-        return view('admin.editberita', [
-            'title' => 'Berita Campaign - We Care',
-            'berita'  => $berita,
-        ]);
-    }
-
-    public function uploadgambar(Request $request)
-    {
-
-        $path_url = 'storage/images/berita';
-        if ($request->hasFile('upload')) {
-            $originName = $request->file('upload')->getClientOriginalName();
-            $fileName = pathinfo($originName, PATHINFO_FILENAME);
-            $extension = $request->file('upload')->getClientOriginalExtension();
-            $fileName = $fileName . '_' . time() . '.' . $extension;
-            $request->file('upload')->move(public_path($path_url), $fileName);
-            $url = asset($path_url . '/' . $fileName);
-        }
-
-        return response()->json(['url' => $url]);
-    }
-
+    // Menambah berita campaign (POST)
     public function posttambahberita(Request $request)
     {
         $valid = $request->validate([
@@ -137,6 +137,7 @@ class CampaignController extends Controller
             'gambar' => 'image|mimes:jpeg,png,jpg|max:2048|dimensions:max_width=4096,max_height=4096',
             'isi' => 'required',
         ]);
+        
         $imagename = time() . '.' . $request->gambar->extension();
         $request->gambar->move(public_path('storage/images/berita'), $imagename);
 
@@ -149,9 +150,21 @@ class CampaignController extends Controller
         $berita->gambar_berita = $imagename;
         $berita->isi_berita = $request->input('isi');
         $berita->save();
+
         return redirect('/admin/campaign/berita')->with('message', 'Berita berhasil ditambahkan');
     }
 
+    // Mengedit berita campaign
+    public function editnews($id)
+    {
+        $berita = Berita::where(['id' => $id])->get();
+        return view('admin.editberita', [
+            'title' => 'Berita Campaign - We Care',
+            'berita'  => $berita,
+        ]);
+    }
+
+    // Mengedit berita campaign (POST)
     public function posteditberita(Request $request)
     {
         $valid = $request->validate([
@@ -160,8 +173,10 @@ class CampaignController extends Controller
             'gambar' => 'image|mimes:jpeg,png,jpg|max:2048|dimensions:max_width=2048,max_height=2048',
             'isi' => 'required',
         ]);
+        
         $id = $request->input('id');
         $berita = Berita::where(['id' => $id])->first();
+
         if ($request->hasFile('gambar')) {
             $imagename = time() . '.' . $request->gambar->extension();
             $request->gambar->move(public_path('storage/images/thumbnail'), $imagename);
@@ -178,12 +193,14 @@ class CampaignController extends Controller
         return redirect('/admin/campaign/berita')->with('message', 'Berita berhasil diedit');
     }
 
+    // Menghapus berita
     public function deleteberita()
     {
         Berita::where('id', request('id'))->delete();
         return back()->with('message', 'Berita berhasil dihapus');
     }
 
+    // Menampilkan kategori
     public function kategori()
     {
         $kategori = Kategori::all();
@@ -193,6 +210,7 @@ class CampaignController extends Controller
         ]);
     }
 
+    // Menambah kategori
     public function tambahkategori(Request $request)
     {
         $valid = $request->validate([
@@ -202,6 +220,7 @@ class CampaignController extends Controller
         return back()->with('message', 'Kategori berhasil ditambahkan');
     }
 
+    // Menghapus kategori
     public function deletekategori()
     {
         if (Campaign::where('category_id', request('id'))->first() != null) {
@@ -210,41 +229,5 @@ class CampaignController extends Controller
             Kategori::where('id', request('id'))->delete();
             return back()->with('message', 'Kategori berhasil dihapus');
         }
-    }
-
-    public function uploadgambarcampaign(Request $request)
-    {
-
-        $path_url = 'storage/images/campaign';
-        if ($request->hasFile('upload')) {
-            $originName = $request->file('upload')->getClientOriginalName();
-            $fileName = pathinfo($originName, PATHINFO_FILENAME);
-            $extension = $request->file('upload')->getClientOriginalExtension();
-            $fileName = $fileName . '_' . time() . '.' . $extension;
-            $request->file('upload')->move(public_path($path_url), $fileName);
-            $url = asset($path_url . '/' . $fileName);
-        }
-
-        return response()->json(['url' => $url]);
-    }
-
-    public function createcampaigndonatur(Request $request)
-    {
-        if ($request->isMethod('post')) {
-            Campaign::create([
-                'user_id' => $request->user_id,
-                'category_id' => $request->category_id,
-                'foto_campaign' => $request->file('image')->store('images/campaign', 'public'),
-                'judul_campaign' => $request->judul_campaign,
-                'deskripsi_campaign' => $request->deskripsi_campaign,
-                'slug_campaign' => str()->slug($request['judul_campaign']),
-                'tgl_mulai_campaign' => Carbon::now(),
-                'tgl_akhir_campaign' => $request->tgl_akhir,
-                'target_campaign' => $request->target_campaign,
-                'status_campaign' => 0,
-            ]);
-            return redirect('/');
-        }
-        return view('/');
     }
 }

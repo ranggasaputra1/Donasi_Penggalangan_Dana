@@ -91,10 +91,18 @@ Route::group(['middleware' => ['auth', 'role:0']], function () {
     Route::post('/admin/penggalang-dana/edit-status-verifikasi-akun', [VerifikasiAkunController::class, "editstatusverifikasi"]);
     Route::post('/admin/pegawai/tambah-pegawai', [PegawaiController::class, "tambahpegawai"]);
     Route::post('/admin/pegawai/hapus-pegawai', [PegawaiController::class, "deletepegawai"]);
-    /* Admin Campaign */
-    Route::get('/admin/campaign/campaign', [CampaignController::class, "campaign"]);
-    Route::post('/admin/campaign/campaign/edit-status-campaign', [CampaignController::class, "editstatuscampaign"]);
-    Route::get('/admin/campaign/campaign/lihat/{id}', [CampaignController::class, "lihatcampaign"]);
+
+
+    Route::get('/admin/campaign/campaign', [CampaignController::class, 'campaign']);
+    Route::post('/admin/campaign/campaign/create', [CampaignController::class, 'createCampaign'])->name('campaign.create');  // Tambahkan nama untuk route create
+    Route::post('/admin/campaign/campaign/edit-status-campaign', [CampaignController::class, 'editstatuscampaign']);
+    Route::get('/admin/campaign/campaign/delete/{id}', [CampaignController::class, 'deletecampaign']);
+    Route::get('/admin/campaign/campaign/lihat/{id}', [CampaignController::class, 'lihatcampaign']);
+    
+    // routes/web.php
+    // routes/web.php
+    Route::get('/admin/campaign/get-penggalang-dana/{id}', [CampaignController::class, 'getPenggalangDanaData']);
+
     Route::get('/admin/campaign/berita', [CampaignController::class, "news"]);
     Route::get('/admin/campaign/berita/tambah-berita', [CampaignController::class, "tambahnews"]);
     Route::post('/admin/campaign/berita/tambah-berita/upload-gambar', [CampaignController::class, "uploadgambar"])->name('upload-gambar-berita');
@@ -102,9 +110,11 @@ Route::group(['middleware' => ['auth', 'role:0']], function () {
     Route::get('/admin/campaign/berita/edit-berita/{id}', [CampaignController::class, "editnews"]);
     Route::post('/admin/campaign/berita/post-edit-berita', [CampaignController::class, "posteditberita"]);
     Route::post('/admin/campaign/berita/hapus-berita', [CampaignController::class, "deleteberita"]);
+
     Route::get('/admin/campaign/kategori', [CampaignController::class, "kategori"]);
     Route::post('/admin/campaign/kategori/tambah-kategori', [CampaignController::class, "tambahkategori"]);
     Route::post('/admin/campaign/kategori/hapus-kategori', [CampaignController::class, "deletekategori"]);
+
     /* Admin Transaksi */
     Route::get('/admin/transaksi-donasi', [TransaksiController::class, "transaksi"]);
     /* Admin Blog */
@@ -114,8 +124,7 @@ Route::group(['middleware' => ['auth', 'role:0']], function () {
     Route::post('/admin/tambah-artikel/upload-gambar', [BlogController::class, "uploadgambar"])->name('upload-gambar-artikel');
     Route::post('/admin/post-tambah-artikel', [BlogController::class, "posttambahartikel"]);
     Route::get('/admin/edit-artikel/{id}', [BlogController::class, "editartikel"]);
-    Route::post('/admin/post-edit-artikel', [BlogController::class, "posteditartikel"]);
-});
+    Route::post('/admin/post-edit-artikel', [BlogController::class, "posteditartikel"]);});
 
 
 Route::group(['middleware' => ['auth', 'role:1,2']], function () {
