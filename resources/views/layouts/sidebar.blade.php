@@ -79,8 +79,8 @@
                     <span>Transaksi Donasi</span>
                 </a>
             </li>
-            <li class="sidebar-item {{ request()->is('#') ? 'active' : '' }}">
-                <a href="#" class='sidebar-link'>
+            <li class="sidebar-item {{ request()->is('admin/riwayat-donasi') ? 'active' : '' }}">
+                <a href="/admin/riwayat-donasi" class='sidebar-link'>
                     <i class="bi bi-clock-history"></i>
                     <span>Riwayat Donasi</span>
                 </a>

@@ -84,7 +84,7 @@
                     <div
                         style="height: 250px; border-radius:25px;
                                 background-image: linear-gradient(to right, #435ebe, rgba(231,231,231,0.5)),
-                                                  url('https://images.unsplash.com/photo-1516570161787-2fd917215a3d?...&auto=format&fit=crop&w=1170&q=80');
+                                                     url('https://images.unsplash.com/photo-1516570161787-2fd917215a3d?...&auto=format&fit=crop&w=1170&q=80');
                                 background-size: cover;">
                         <div class="p-4" style="max-width: 80%; margin: auto;">
                             <h1 style="font-size: 2.5rem; color: #fff;">Donasi Sekarang</h1>
@@ -92,12 +92,12 @@
                     </div>
                 </a>
             @else
-                <a href="#" data-bs-toggle="modal" data-bs-target="#createcampaign" class="hvr-grow d-block mt-4"
+                <a href="/" data-bs-toggle="modal" data-bs-target="#createCampaignModal" class="hvr-grow d-block mt-4"
                     data-aos="zoom-in">
                     <div
                         style="height: 250px; border-radius:25px;
                                 background-image: linear-gradient(to right, #435ebe, rgba(231,231,231,0.5)),
-                                                  url('https://images.unsplash.com/photo-1516570161787-2fd917215a3d?...&auto=format&fit=crop&w=1170&q=80');
+                                                     url('https://images.unsplash.com/photo-1516570161787-2fd917215a3d?...&auto=format&fit=crop&w=1170&q=80');
                                 background-size: cover;">
                         <div class="p-4" style="max-width: 80%; margin: auto;">
                             <h1 style="font-size: 2.5rem; color: #fff;">Galang Dana Sekarang</h1>
@@ -107,67 +107,41 @@
             @endauth
         </div>
 
-        {{-- Modal --}}
-        <div class="modal fade" id="createcampaign" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-            aria-hidden="true">
-            <div class="modal-dialog" data-aos="zoom-in">
-                @auth
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Tatacara Galang Dana</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- Isi tatacara di sini -->
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                            <button type="button" class="btn btn-custom" data-bs-toggle="modal"
-                                data-bs-target="#create">Selanjutnya</button>
-                        </div>
+        {{-- Modal untuk Galang Dana / Login --}}
+        <div class="modal fade" id="" tabindex="-1" aria-labelledby="createCampaignLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            @auth
+                                Tatacara Galang Dana
+                            @else
+                                Hubungi Admin untuk Menggalang Dana
+                            @endauth
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                     </div>
-                @else
-                    <div class="modal-content text-center">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Hubungi Admin untuk Menggalang Dana</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body mb-3">
-                            <a href="/login" class="btn btn-custom px-4 py-2">Login / Daftar</a>
-                        </div>
-                    </div>
-                @endauth
-            </div>
-        </div>
-        @auth
-            <div class="modal fade" id="create" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-                aria-hidden="true">
-                <div class="modal-dialog" data-aos="zoom-in">
-                    @if (Auth::user()->role == 2)
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Galang Dana</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                @include('partials.create_campaign_form')
-                            </div>
-                        </div>
-                    @else
-                        <div class="modal-content text-center">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Verifikasi Akun Anda</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body mb-3">
+                    <div class="modal-body text-center">
+                        @auth
+                            @if (Auth::user()->role == 2)
+                                <p>Silakan isi form di bawah ini untuk mengajukan campaign donasi.</p>
+                                <button type="button" class="btn btn-custom px-4 py-2 mt-3">Selanjutnya</button>
+                            @else
+                                <p>Anda perlu memverifikasi akun Anda untuk bisa membuat campaign.</p>
                                 <a href="/verifikasi-akun/{{ Auth::user()->id }}"
-                                    class="btn btn-custom px-4 py-2">Verifikasi</a>
-                            </div>
-                        </div>
-                    @endif
+                                    class="btn btn-custom px-4 py-2 mt-3">Verifikasi</a>
+                            @endif
+                        @else
+                            <p>Anda perlu login atau mendaftar untuk bisa membuat campaign.</p>
+                            <a href="/" class="btn btn-custom px-4 py-2 mt-3">Login / Daftar</a>
+                        @endauth
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    </div>
                 </div>
             </div>
-        @endauth
+        </div>
     </section>
 
     <section data-aos="fade-up" class="bg-white">

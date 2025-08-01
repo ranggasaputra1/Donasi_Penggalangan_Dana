@@ -10,6 +10,7 @@ use App\Models\Kategori;
 use App\Models\Transaksi;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\RiwayatTransaksi;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use App\Models\KuisionerPenggalangDana;
@@ -231,6 +232,68 @@ class CampaignController extends Controller
         $transaksi->save();
 
         return redirect()->route('donasi.detail', $transaksi->campaign->slug_campaign)->with('message', 'Bukti transfer berhasil diunggah. Donasi Anda akan diverifikasi oleh admin.');
+    }
+
+   public function confirmTransaksi(Request $request)
+    {
+        $request->validate([
+            'transaksi_id' => 'required|exists:transaksi,id',
+        ]);
+
+        $transaksi = Transaksi::findOrFail($request->transaksi_id);
+
+        if ($transaksi->status_transaksi == 0) { // status 0 = pending
+            // Perbarui status transaksi menjadi sukses (1)
+            $transaksi->status_transaksi = 1;
+            $transaksi->save();
+
+            // Tambahkan nominal donasi ke dana terkumpul campaign
+            $campaign = $transaksi->campaign;
+            $campaign->dana_terkumpul += $transaksi->nominal_transaksi;
+            $campaign->save();
+
+            // Tambahkan record ke tabel riwayat_transaksi
+            RiwayatTransaksi::create([
+                'transaksi_id' => $transaksi->id,
+                'campaign_id' => $transaksi->campaign_id,
+                'user_id' => $transaksi->user_id,
+                'nama_donatur' => $transaksi->nama,
+                'nominal' => $transaksi->nominal_transaksi,
+                'tgl_konfirmasi' => Carbon::now(),
+            ]);
+        }
+
+        return redirect()->back()->with('message', 'Transaksi berhasil dikonfirmasi dan dana telah ditambahkan ke campaign.');
+    }
+
+    public function showDonorRiwayatDonasi()
+    {
+        // Memeriksa apakah ada pengguna yang login
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+        
+        // Mengambil semua riwayat donasi (pending, sukses, dll) untuk pengguna yang sedang login
+        $transaksi = Transaksi::with('campaign')
+                                     ->where('user_id', Auth::id())
+                                     ->latest()
+                                     ->get();
+
+        return view('donasi.riwayat_donasi', [
+            'transaksi' => $transaksi,
+            'title' => 'Riwayat Donasi Saya'
+        ]);
+    }
+
+    public function riwayatDonasiAdmin()
+    {
+        // Mengambil semua data riwayat transaksi
+        $riwayat = RiwayatTransaksi::with(['transaksi', 'campaign', 'user'])->latest()->get();
+
+        return view('admin.riwayat_donasi', [
+            'riwayat' => $riwayat,
+            'title' => 'Riwayat Donasi Admin'
+        ]);
     }
 
     // Halaman untuk berita campaign

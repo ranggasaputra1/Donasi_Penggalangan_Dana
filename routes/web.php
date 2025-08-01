@@ -68,17 +68,18 @@ Route::post('/transaksi/callback', [MidtransCallbackController::class, 'receive'
     // Rute untuk memproses donasi
     Route::post('/donasi/store', [CampaignController::class, 'storeDonation'])->name('donasi.store');
 
- // Rute untuk halaman konfirmasi pembayaran donasi
-Route::get('/donasi/konfirmasi/{id}', [CampaignController::class, 'showConfirmationPage'])->name('donasi.konfirmasi');
+    // Rute untuk halaman konfirmasi pembayaran donasi
+    Route::get('/donasi/konfirmasi/{id}', [CampaignController::class, 'showConfirmationPage'])->name('donasi.konfirmasi');
 
-// Rute untuk memproses unggahan bukti transfer
-Route::post('/donasi/upload-bukti/{id}', [CampaignController::class, 'uploadProof'])->name('donasi.upload.proof');
+    // Rute untuk memproses unggahan bukti transfer
+    Route::post('/donasi/upload-bukti/{id}', [CampaignController::class, 'uploadProof'])->name('donasi.upload.proof');
+
+    // Rute untuk halaman riwayat donasi donatur
+    Route::get('/donasi-saya', [CampaignController::class, 'showDonorRiwayatDonasi'])->name('donasi.riwayat');
 
 
-
-
-Route::get('/kuisioner', [KuisionerController::class, 'form']);
-Route::post('/kuisioner', [KuisionerController::class, 'submit']);
+    Route::get('/kuisioner', [KuisionerController::class, 'form']);
+    Route::post('/kuisioner', [KuisionerController::class, 'submit']);
 
 
 /* Dashboard Admin */
@@ -133,6 +134,14 @@ Route::group(['middleware' => ['auth', 'role:0']], function () {
 
     /* Admin Transaksi */
     Route::get('/admin/transaksi-donasi', [TransaksiController::class, "transaksi"]);
+     // Rute untuk mengonfirmasi transaksi
+    Route::post('/admin/transaksi/confirm', [CampaignController::class, 'confirmTransaksi'])->name('transaksi.confirm');
+
+
+    // Rute untuk halaman riwayat donasi admin
+    Route::get('/admin/riwayat-donasi', [CampaignController::class, 'riwayatDonasiAdmin'])->name('admin.riwayat.donasi');
+
+
     /* Admin Blog */
     Route::get('/admin/artikel-blog', [BlogController::class, "blog"]);
     Route::post('/admin/hapus-artikel', [BlogController::class, "deleteartikel"])->name('hapus-artikel');
@@ -146,7 +155,6 @@ Route::group(['middleware' => ['auth', 'role:0']], function () {
 Route::group(['middleware' => ['auth', 'role:1,2']], function () {
     /* Campaign & Donasi */
     Route::get('/campaign-saya', [CampaignController::class, "mycampaign"]);
-    Route::get('/donasi-saya', [transaksiController::class, "mydonation"]);
     /* Buat Campaign */
     // Route::get('/buat-campaign', [CampaignController::class, "buatcampaigndonatur"]);
     Route::post('/buat-campaign', [CampaignController::class, "createcampaigndonatur"]);

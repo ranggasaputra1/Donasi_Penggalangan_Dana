@@ -49,6 +49,8 @@
                         <a href="/" class="nav-item px-2" style="color: #ffffff;text-decoration: none;">Home</a>
                         <a href="{{ route('donasi.index') }}" class="nav-item px-2"
                             style="color: #ffffff;text-decoration: none;">Postingan Donasi</a>
+                        <a href="/donasi-saya" class="nav-item px-2" style="color: #ffffff;text-decoration: none;">Riwayat
+                            Donasi</a>
 
                         @if (Auth::user()->role == 0)
                             <a href="/admin" class="nav-item px-2"
