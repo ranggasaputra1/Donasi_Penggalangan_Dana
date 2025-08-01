@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Berita;
 use App\Models\Campaign;
+use App\Models\Donation;
 use App\Models\Kategori;
+use App\Models\Transaksi;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\KuisionerPenggalangDana;
 use Illuminate\Support\Facades\File;
+use App\Models\KuisionerPenggalangDana;
 
 class CampaignController extends Controller
 {
@@ -157,6 +160,78 @@ class CampaignController extends Controller
         return response()->json($penggalangDana);
     }
 
+     public function showCampaignsForDonors()
+    {
+        // Mengambil semua data campaign tanpa memfilter status
+        $campaigns = Campaign::with('kuisioner')
+                            ->latest()
+                            ->get();
+
+        return view('donasi.index', [
+            'campaigns' => $campaigns,
+            'title' => 'Postingan Donasi - We Care'
+        ]);
+    }
+
+
+    public function showCampaignDetail($slug)
+    {
+        $campaign = Campaign::with('kuisioner')->where('slug_campaign', $slug)->firstOrFail();
+
+        return view('donasi.detail', [
+            'campaign' => $campaign,
+            'title' => $campaign->judul_campaign
+        ]);
+    }
+
+    public function storeDonation(Request $request)
+    {
+        $request->validate([
+            'campaign_id' => 'required|exists:campaigns,id',
+            'donor_name' => 'required|string|max:255',
+            'donor_email' => 'required|email|max:255',
+            'amount' => 'required|numeric|min:10000',
+        ]);
+
+        $transaksi = Transaksi::create([
+            'campaign_id' => $request->campaign_id,
+            'nama' => $request->donor_name,
+            'user_id' => auth()->check() ? auth()->id() : null,
+            'nominal_transaksi' => $request->amount,
+            'keterangan' => 'Donasi untuk ' . $request->judul_campaign, // Tambahkan ini
+            'status_transaksi' => 'pending', // Sesuaikan dengan kolom Anda
+        ]);
+
+        return redirect()->route('donasi.konfirmasi', $transaksi->id)->with('message', 'Donasi Anda berhasil dibuat! Silakan selesaikan pembayaran.');
+    }
+
+    public function showConfirmationPage($id)
+    {
+        $transaksi = Transaksi::with('campaign')->findOrFail($id);
+
+        return view('donasi.konfirmasi', [
+            'transaksi' => $transaksi, // Ganti 'donation' dengan 'transaksi'
+            'title' => 'Konfirmasi Pembayaran'
+        ]);
+    }
+    
+    public function uploadProof(Request $request, $id)
+    {
+        $transaksi = Transaksi::findOrFail($id);
+
+        $request->validate([
+            'proof' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+        
+        $imageName = Str::slug($transaksi->campaign->judul_campaign . ' ' . $transaksi->nama) . '-' . time() . '.' . $request->proof->extension();
+        $request->proof->move(public_path('storage/images/proofs'), $imageName);
+        
+        // Perbarui record transaksi dengan nama file bukti transfer
+        $transaksi->keterangan = $imageName; // Gunakan kolom keterangan atau tambahkan kolom baru
+        $transaksi->save();
+
+        return redirect()->route('donasi.detail', $transaksi->campaign->slug_campaign)->with('message', 'Bukti transfer berhasil diunggah. Donasi Anda akan diverifikasi oleh admin.');
+    }
 
     // Halaman untuk berita campaign
     public function news()

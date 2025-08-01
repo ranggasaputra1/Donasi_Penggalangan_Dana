@@ -18,7 +18,6 @@
 
 <body style="font-family: poppins; background-color:#F7F7F7; height:100%" id="body">
     <section class="shadow-sm" id="searchbar">
-        <!-- Mobile Navbar -->
         <nav class="navbar p-3 mobile" style="background-color:#435ebe;">
             <div class="container justify-content-between">
                 <a href="/" class="navbar-brand" style="color: #ffffff;">
@@ -39,24 +38,22 @@
             </div>
         </nav>
 
-        <!-- Desktop Navbar -->
         <nav class="navbar dekstop" style="background-color:#435ebe;">
             <div class="container py-2 px-4 d-flex justify-content-between align-items-center">
-                <!-- Kiri: Logo + Menu -->
                 <div class="d-flex align-items-center">
                     <a href="/" class="navbar-brand me-3" style="color: #ffffff;">
                         <img style="width: 35px; height: 100%" src="/assets/images/logo/logo.png" alt="Logo">
                     </a>
 
                     @auth
+                        <a href="/" class="nav-item px-2" style="color: #ffffff;text-decoration: none;">Home</a>
+                        <a href="{{ route('donasi.index') }}" class="nav-item px-2"
+                            style="color: #ffffff;text-decoration: none;">Postingan Donasi</a>
+
                         @if (Auth::user()->role == 0)
                             <a href="/admin" class="nav-item px-2"
                                 style="color: #ffffff;text-decoration: none;">Dashboard</a>
                         @else
-                            <a href="/donasi-saya" class="nav-item px-2"
-                                style="color: #ffffff;text-decoration: none;">Donasi Saya</a>
-                            <a href="/campaign-saya" class="nav-item px-2"
-                                style="color: #ffffff;text-decoration: none;">Campaign Saya</a>
                         @endif
                     @else
                         <a href="/" class="nav-item px-2" style="color: #ffffff;text-decoration: none;">Home</a>
@@ -64,10 +61,12 @@
                             Artikel</a>
                         <a href="/kuisioner" class="nav-item px-2" style="color: #ffffff;text-decoration: none;">Halaman
                             Kuisioner</a>
+                        <a href="{{ route('donasi.index') }}" class="nav-item px-2"
+                            style="color: #ffffff;text-decoration: none;">Postingan Donasi</a>
+                        <i></i>
                     @endauth
                 </div>
 
-                <!-- Kanan: Search + Login -->
                 <div class="d-flex align-items-center">
                     <form class="d-flex me-3" role="search">
                         <div class="container-input">
@@ -106,7 +105,6 @@
         </nav>
     </section>
 
-    <!-- Mobile Bottom Nav -->
     <nav class="fixed-bottom mb-4 mobile">
         <div class="container-fluid" style="width: 100%;">
             <div class="container d-flex align-items-center justify-content-center shadow"

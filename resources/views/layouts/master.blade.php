@@ -14,10 +14,15 @@
 
 <body>
     <div id="app">
-        <div id="sidebar" class="active">
-            @include('layouts.sidebar')
-        </div>
-        <div id="main" class="layout-navbar navbar-fixed">
+        {{-- Sidebar hanya ditampilkan jika pengguna sudah login --}}
+        @auth
+            <div id="sidebar" class="active">
+                @include('layouts.sidebar')
+            </div>
+        @endauth
+
+        {{-- Menggunakan class kondisional untuk tampilan penuh --}}
+        <div id="main" class="layout-navbar navbar-fixed @guest layout-fullwidth @endguest">
             <header class="mb-3">
                 @include('layouts.navbar')
             </header>

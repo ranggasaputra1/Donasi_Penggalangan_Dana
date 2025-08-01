@@ -59,6 +59,22 @@ Route::get('/verifikasi/{token}', [VerifikasiAkunController::class, "verifikasia
 /* Callback Midtrans */
 Route::post('/transaksi/callback', [MidtransCallbackController::class, 'receive']);
 
+ // Rute untuk halaman donasi publik
+    Route::get('/donasi', [CampaignController::class, 'showCampaignsForDonors'])->name('donasi.index');
+
+    // Rute untuk halaman detail campaign donasi
+    Route::get('/donasi/{slug}', [CampaignController::class, 'showCampaignDetail'])->name('donasi.detail');
+
+    // Rute untuk memproses donasi
+    Route::post('/donasi/store', [CampaignController::class, 'storeDonation'])->name('donasi.store');
+
+ // Rute untuk halaman konfirmasi pembayaran donasi
+Route::get('/donasi/konfirmasi/{id}', [CampaignController::class, 'showConfirmationPage'])->name('donasi.konfirmasi');
+
+// Rute untuk memproses unggahan bukti transfer
+Route::post('/donasi/upload-bukti/{id}', [CampaignController::class, 'uploadProof'])->name('donasi.upload.proof');
+
+
 
 
 Route::get('/kuisioner', [KuisionerController::class, 'form']);
@@ -102,6 +118,7 @@ Route::group(['middleware' => ['auth', 'role:0']], function () {
     Route::get('/admin/campaign/get-penggalang-dana/{id}', [CampaignController::class, 'getPenggalangDanaData']);
     
 
+   
     Route::get('/admin/campaign/berita', [CampaignController::class, "news"]);
     Route::get('/admin/campaign/berita/tambah-berita', [CampaignController::class, "tambahnews"]);
     Route::post('/admin/campaign/berita/tambah-berita/upload-gambar', [CampaignController::class, "uploadgambar"])->name('upload-gambar-berita');
