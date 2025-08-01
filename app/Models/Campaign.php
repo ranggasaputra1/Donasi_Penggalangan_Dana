@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Campaign extends Model
 {
@@ -22,6 +24,7 @@ class Campaign extends Model
         'target_campaign',
         'status_campaign',
         'slug_campaign',
+        'kategori_pengajuan',
         'jumlah_dana_dibutuhkan',
         'jumlah_tanggungan_keluarga',
         'pekerjaan',
@@ -29,25 +32,34 @@ class Campaign extends Model
         'kebutuhan_mendesak',
         'lama_pengajuan',
         'status_korban',
+        'no_rekening',
+        'no_whatsapp',
+        'no_rekening_admin',
+        'no_whatsapp_admin',
+    ];
+    
+    // Tambahkan properti ini untuk mengonversi kolom tanggal menjadi objek Carbon secara otomatis
+    protected $casts = [
+        'tgl_mulai_campaign' => 'datetime',
+        'tgl_akhir_campaign' => 'datetime',
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Kategori::class, 'category_id');
     }
 
-    public function berita()
+    public function berita(): HasMany
     {
         return $this->hasMany(Berita::class);
     }
 
-    // Relasi dengan KuisionerPenggalangDana (menyimpan informasi penggalang dana)
-    public function kuisioner()
+    public function kuisioner(): BelongsTo
     {
         return $this->belongsTo(KuisionerPenggalangDana::class, 'penggalang_dana_id');
     }

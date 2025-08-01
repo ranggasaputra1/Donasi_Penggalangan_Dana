@@ -1,87 +1,57 @@
 @extends('layouts.master')
+
 @section('content')
     <div class="page-heading">
         <div class="page-title">
             <div class="row">
                 <div class="col-12 col-md-6 order-md-1 order-last">
-                    <h3>Lihat Campaign</h3>
+                    <h3>Detail Postingan Donasi</h3>
                 </div>
             </div>
         </div>
 
-        <!-- Basic Vertical form layout section start -->
-        <section id="basic-vertical-layouts">
-            <div class="row match-height">
-                <div class="col-md-12 col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="card-title">Lihat Campaign</h4>
+        <section class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">{{ $campaign->judul_campaign }}</h4>
+                    <span class="badge bg-primary">{{ $campaign->kategori_pengajuan }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img src="{{ asset('storage/images/campaign/' . $campaign->foto_campaign) }}"
+                                class="img-fluid rounded" alt="Foto Campaign">
                         </div>
-                        <div class="card-content">
-                            <div class="card-body">
-                                    <div class="form-body">
-                                        @foreach ($campaign as $item)
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <div class="form-group">
-                                                        <label for="first-name-vertical">Judul Campaign</label>
-                                                        <p>{{ $item->judul_campaign }}</p>
-                                                    </div>
-                                                </div>
-                                                <div class="col-12">
-                                                    <div class="form-group">
-                                                        <label for="first-name-vertical">Penggalang Dana</label>
-                                                        <p>{{ $item->user->name }}</p>
-                                                    </div>
-                                                </div>
-                                                <div class="col-12">
-                                                    <div class="form-group">
-                                                        <label for="isi-vertical">Tanggal Mulai Campaign</label>
-                                                        <p>{{ $item->tgl_mulai_campaign }}</p>
-                                                    </div>
-                                                </div>
-                                                <div class="col-12">
-                                                    <div class="form-group">
-                                                        <label for="isi-vertical">Tanggal Akhir Campaign</label>
-                                                        <p>{{ $item->tgl_akhir_campaign }}</p>
-                                                    </div>
-                                                </div>
-                                                <div class="col-12">
-                                                    <div class="form-group">
-                                                        <label for="isi-vertical">Target Campaign</label>
-                                                        <p>Rp{{ number_format($item->target_campaign, 2, ',', '.') }}</p>
-                                                    </div>
-                                                </div>
-                                                <div class="col-12">
-                                                    <div class="form-group">
-                                                        <label for="gambar-vertical">Foto Campaign</label>
-                                                        <img src="/storage/{{ $item->foto_campaign }}" width="100%" alt="">
-                                                    </div>
-                                                </div>
-                                                <div class="col-12">
-                                                    <div class="form-group" style="figure.img{width=10px}">
-                                                        <label for="isi-vertical">Deskripsi Campaign</label>
-                                                        {!! str_replace('<img', '<img style="width: 100%"', $item->deskripsi_campaign) !!}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-12 d-flex justify-content-end">
-                                                <a href="/admin/campaign/campaign" class="btn btn-primary me-1 mb-1">
-                                                    Kembali
-                                                </a>
-                                            </div>
-                                    </div>
-                                    @endforeach
+                        <div class="col-md-8">
+                            <h5 class="mt-3">Detail Donasi</h5>
+                            <p><b>Penggalang Dana:</b> {{ $campaign->kuisioner->nama ?? 'Tidak Diketahui' }}</p>
+                            <p><b>Tanggal Mulai:</b> {{ $campaign->tgl_mulai_campaign->format('d-m-Y') }}</p>
+                            <p><b>Tanggal Berakhir:</b>
+                                {{ \Carbon\Carbon::parse($campaign->tgl_akhir_campaign)->format('d-m-Y') }}</p>
+                            <p><b>Dana Terkumpul:</b> Rp. {{ number_format($campaign->dana_terkumpul, 0, ',', '.') }}</p>
+                            <p><b>Target Donasi:</b> Rp. {{ number_format($campaign->jumlah_dana_dibutuhkan, 0, ',', '.') }}
+                            </p>
+
+                            <hr>
+                            <h5 class="mt-3">Data Penggalang Dana</h5>
+                            <p><b>Pekerjaan:</b> {{ $campaign->pekerjaan }}</p>
+                            <p><b>Jumlah Tanggungan Keluarga:</b> {{ $campaign->jumlah_tanggungan_keluarga }}</p>
+                            <p><b>Kondisi Kesehatan:</b> {{ $campaign->kondisi_kesehatan }}</p>
+                            <p><b>Kebutuhan Mendesak:</b> {{ $campaign->kebutuhan_mendesak }}</p>
+                            <p><b>Lama Pengajuan:</b> {{ $campaign->lama_pengajuan }} hari</p>
+                            <p><b>Status Korban:</b> {{ $campaign->status_korban }}</p>
+                            <hr>
+                            <h5 class="mt-3">Deskripsi Lengkap</h5>
+                            <div class="card-text">
+                                {!! $campaign->deskripsi_campaign !!}
                             </div>
                         </div>
                     </div>
+                    <div class="d-flex justify-content-end mt-4">
+                        <a href="{{ url('/admin/campaign/campaign') }}" class="btn btn-secondary">Kembali</a>
+                    </div>
                 </div>
             </div>
+        </section>
     </div>
-    </section>
-    <!-- // Basic Vertical form layout section end -->
-    </div>
-@endsection
-@section('script')
-
 @endsection

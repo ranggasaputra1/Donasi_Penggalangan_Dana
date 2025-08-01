@@ -22,6 +22,16 @@
             </div>
         @endif
 
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <div class="d-flex justify-content-end mb-3">
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCampaignModal">Tambah Postingan
                 Donasi</button>
@@ -33,83 +43,193 @@
                     Postingan Donasi
                 </div>
                 <div class="card-body">
-                    <table class="table" id="table1">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Judul</th>
-                                <th>Kategori</th>
-                                <th>Penggalang Dana</th>
-                                <th>Tanggal Mulai</th>
-                                <th>Tanggal Akhir</th>
-                                <th>Status</th>
-                                <th>Tindakan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($campaign as $key => $item)
+                    <div class="table-responsive">
+                        <table class="table" id="table1">
+                            <thead>
                                 <tr>
-                                    <td>{{ $key + 1 }}</td>
-                                    <td>{{ $item->judul_campaign }}</td>
-                                    <td>{{ $item->category->nama_kategori }}</td>
-                                    <td>{{ $item->user->name }}</td>
-                                    <td>{{ $item->tgl_mulai_campaign }}</td>
-                                    <td>{{ $item->tgl_akhir_campaign }}</td>
-                                    <td>{{ $item->status_campaign == 0 ? 'Pending' : ($item->status_campaign == 1 ? 'Disetujui' : 'Ditolak') }}
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn" data-bs-toggle="modal"
-                                            data-bs-target="#edit{{ $item->id }}">
-                                            <i class="bi bi-pencil-fill"></i>
-                                        </button>
-                                        <a href="/admin/campaign/campaign/lihat/{{ $item->id }}" class="btn">
-                                            <i class="bi bi-eye-fill"></i>
-                                        </a>
-                                    </td>
+                                    <th>No</th>
+                                    <th>Judul</th>
+                                    <th>Kategori</th>
+                                    <th>Nama Penggalang Dana</th>
+                                    <th>Tanggal Mulai</th>
+                                    <th>Sisa Waktu Pengajuan</th>
+                                    <th>Tindakan</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach ($campaigns as $key => $item)
+                                    <tr>
+                                        <td>{{ $key + 1 }}</td>
+                                        <td>{{ $item->judul_campaign }}</td>
+                                        <td>{{ $item->kategori_pengajuan }}</td>
+                                        <td>{{ $item->kuisioner->nama ?? 'Penggalang Dana Tidak Ditemukan' }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($item->tgl_mulai_campaign)->format('d-m-Y') }}</td>
+                                        <td>{{ $item->lama_pengajuan }} hari lagi</td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                <a href="#" class="btn" data-bs-toggle="modal"
+                                                    data-bs-target="#editCampaignModal{{ $item->id }}">
+                                                    <i class="bi bi-pencil-fill"></i>
+                                                </a>
+                                                <a href="/admin/campaign/campaign/lihat/{{ $item->id }}" class="btn">
+                                                    <i class="bi bi-eye-fill"></i>
+                                                </a>
+                                                <a href="#" class="btn text-danger" data-bs-toggle="modal"
+                                                    data-bs-target="#deleteCampaignModal{{ $item->id }}">
+                                                    <i class="bi bi-trash-fill"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <div class="modal fade" id="editCampaignModal{{ $item->id }}" tabindex="-1"
+                                        aria-labelledby="editCampaignModalLabel{{ $item->id }}" aria-hidden="true"
+                                        data-bs-backdrop="static" data-bs-keyboard="false">
+                                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="editCampaignModalLabel{{ $item->id }}">
+                                                        Edit
+                                                        Postingan Donasi</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form method="POST" action="{{ route('campaign.edit') }}"
+                                                        enctype="multipart/form-data">
+                                                        @csrf
+                                                        <input type="hidden" name="id" value="{{ $item->id }}">
+                                                        <div class="mb-3">
+                                                            <label for="judul_campaign" class="form-label">Judul
+                                                                Campaign</label>
+                                                            <input type="text" class="form-control" id="judul_campaign"
+                                                                name="judul_campaign"
+                                                                value="{{ old('judul_campaign', $item->judul_campaign) }}"
+                                                                required>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="penggalang_dana_id" class="form-label">Pilih
+                                                                Penggalang
+                                                                Dana</label>
+                                                            <select name="penggalang_dana_id"
+                                                                id="penggalang_dana_id_{{ $item->id }}"
+                                                                class="form-select" required>
+                                                                <option value="" disabled>Pilih Penggalang Dana
+                                                                </option>
+                                                                @foreach ($penggalangDanas as $penggalangDana)
+                                                                    <option value="{{ $penggalangDana->id }}"
+                                                                        {{ old('penggalang_dana_id', $item->penggalang_dana_id) == $penggalangDana->id ? 'selected' : '' }}>
+                                                                        {{ $penggalangDana->nama }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="foto_campaign" class="form-label">Foto Postingan
+                                                                Donasi</label>
+                                                            <input type="file" class="form-control" id="foto_campaign"
+                                                                name="foto_campaign">
+                                                            <div class="mt-2">
+                                                                <img src="{{ asset('storage/images/campaign/' . $item->foto_campaign) }}"
+                                                                    alt="Foto Campaign" width="150">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="deskripsi_campaign" class="form-label">Deskripsi
+                                                                Campaign</label>
+                                                            <textarea class="form-control" id="deskripsi_campaign" name="deskripsi_campaign" required>{{ old('deskripsi_campaign', $item->deskripsi_campaign) }}</textarea>
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Tutup</button>
+                                                            <button type="submit" class="btn btn-primary">Simpan
+                                                                Perubahan</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal fade" id="deleteCampaignModal{{ $item->id }}" tabindex="-1"
+                                        aria-labelledby="deleteCampaignModalLabel{{ $item->id }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title"
+                                                        id="deleteCampaignModalLabel{{ $item->id }}">Konfirmasi Hapus
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Apakah Anda yakin ingin menghapus postingan donasi
+                                                    "{{ $item->judul_campaign }}"?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Batal</button>
+                                                    <a href="/admin/campaign/campaign/delete/{{ $item->id }}"
+                                                        class="btn btn-danger">Hapus</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </section>
     </div>
 
-    <!-- Modal untuk menambah campaign -->
     <div class="modal fade" id="createCampaignModal" tabindex="-1" aria-labelledby="createCampaignModalLabel"
         aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="createCampaignModalLabel">Tambah Postingan Donasi</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <form method="POST" action="{{ route('campaign.create') }}" enctype="multipart/form-data">
                         @csrf
                         <div class="mb-3">
                             <label for="judul_campaign" class="form-label">Judul Campaign</label>
-                            <input type="text" class="form-control" id="judul_campaign" name="judul_campaign" required>
+                            <input type="text" class="form-control" id="judul_campaign" name="judul_campaign"
+                                value="{{ old('judul_campaign') }}" required>
                         </div>
 
-                        <!-- Pilih Penggalang Dana -->
                         <div class="mb-3">
                             <label for="penggalang_dana_id" class="form-label">Pilih Penggalang Dana</label>
                             <select name="penggalang_dana_id" id="penggalang_dana_id" class="form-select" required>
                                 <option value="" disabled selected>Pilih Penggalang Dana</option>
                                 @foreach ($penggalangDanas as $penggalangDana)
-                                    <option value="{{ $penggalangDana->id }}">{{ $penggalangDana->nama }} -
-                                        {{ $penggalangDana->kategori_pengajuan }}</option>
+                                    <option value="{{ $penggalangDana->id }}"
+                                        {{ old('penggalang_dana_id') == $penggalangDana->id ? 'selected' : '' }}>
+                                        {{ $penggalangDana->nama }}</option>
                                 @endforeach
                             </select>
                         </div>
 
-                        <!-- Data Kuisioner Penggalang Dana -->
                         <div id="kuisioner-data" style="display:none;">
                             <div class="mb-3">
                                 <label for="kategori_pengajuan" class="form-label">Kategori Pengajuan</label>
-                                <input type="text" name="kategori_pengajuan" id="kategori_pengajuan" class="form-control"
-                                    readonly>
+                                <input type="text" name="kategori_pengajuan" id="kategori_pengajuan"
+                                    class="form-control" readonly>
                             </div>
                             <div class="mb-3">
                                 <label for="jumlah_dana_dibutuhkan" class="form-label">Jumlah Dana Dibutuhkan</label>
@@ -148,16 +268,14 @@
                             </div>
                         </div>
 
-                        <!-- Foto Campaign -->
                         <div class="mb-3">
                             <label for="foto_campaign" class="form-label">Foto Postingan Donasi</label>
                             <input type="file" class="form-control" id="foto_campaign" name="foto_campaign" required>
                         </div>
 
-                        <!-- Deskripsi Campaign -->
                         <div class="mb-3">
                             <label for="deskripsi_campaign" class="form-label">Deskripsi Campaign</label>
-                            <textarea class="form-control" id="deskripsi_campaign" name="deskripsi_campaign" required></textarea>
+                            <textarea class="form-control" id="deskripsi_campaign" name="deskripsi_campaign" required>{{ old('deskripsi_campaign') }}</textarea>
                         </div>
 
                         <div class="modal-footer">

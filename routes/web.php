@@ -94,14 +94,13 @@ Route::group(['middleware' => ['auth', 'role:0']], function () {
 
 
     Route::get('/admin/campaign/campaign', [CampaignController::class, 'campaign']);
-    Route::post('/admin/campaign/campaign/create', [CampaignController::class, 'createCampaign'])->name('campaign.create');  // Tambahkan nama untuk route create
+    Route::post('/admin/campaign/campaign/create', [CampaignController::class, 'createCampaign'])->name('campaign.create');
+    Route::post('/admin/campaign/campaign/edit', [CampaignController::class, 'editCampaign'])->name('campaign.edit'); // Tambahkan rute ini untuk update
     Route::post('/admin/campaign/campaign/edit-status-campaign', [CampaignController::class, 'editstatuscampaign']);
     Route::get('/admin/campaign/campaign/delete/{id}', [CampaignController::class, 'deletecampaign']);
     Route::get('/admin/campaign/campaign/lihat/{id}', [CampaignController::class, 'lihatcampaign']);
-    
-    // routes/web.php
-    // routes/web.php
     Route::get('/admin/campaign/get-penggalang-dana/{id}', [CampaignController::class, 'getPenggalangDanaData']);
+    
 
     Route::get('/admin/campaign/berita', [CampaignController::class, "news"]);
     Route::get('/admin/campaign/berita/tambah-berita', [CampaignController::class, "tambahnews"]);

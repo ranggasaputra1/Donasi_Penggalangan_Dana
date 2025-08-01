@@ -55,7 +55,6 @@
                                     <td>{{ $i }}</td>
                                     <td>{{ $item->judul_berita }}</td>
                                     <td>{{ $item->tgl_terbit_berita }}</td>
-                                    <td>{{ $item->campaign->judul_campaign }}</td>
                                     <td>{{ $item->user->name }}</td>
                                     <td>
                                         <a href="/admin/campaign/berita/edit-berita/{{ $item->id }}" class="btn">

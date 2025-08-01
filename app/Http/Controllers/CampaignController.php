@@ -9,110 +9,165 @@ use App\Models\Kategori;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\KuisionerPenggalangDana;
+use Illuminate\Support\Facades\File;
 
 class CampaignController extends Controller
 {
-    // Menampilkan daftar campaign
     public function campaign()
     {
-        $campaign = Campaign::with('category', 'user')->get();  // Mengambil data campaign dengan relasi kategori dan user
-        $categories = Kategori::all();  // Ambil kategori untuk form
-        $penggalangDanas = KuisionerPenggalangDana::all(); // Ambil data penggalang dana yang sudah mengisi kuisioner
+        // Mengambil data campaign dengan relasi kategori dan user
+        $campaigns = Campaign::with('kuisioner')->latest()->get();
+
+        // Ambil data penggalang dana terbaru
+        $penggalangDanas = KuisionerPenggalangDana::latest()->get(); 
+
+        // Menghitung sisa waktu untuk setiap campaign
+        foreach ($campaigns as $item) {
+            $endDate = Carbon::parse($item->tgl_akhir_campaign);
+            $item->sisa_waktu = $endDate->diffInDays(Carbon::now());
+        }
+
+        // Mengirim data campaign, kategori, penggalang dana ke view
         return view('admin.campaign', [
-            'campaign' => $campaign,
-            'categories' => $categories,
-            'penggalangDanas' => $penggalangDanas, // Pass data penggalang dana ke view
+            'campaigns' => $campaigns,
+            'penggalangDanas' => $penggalangDanas, 
             'title' => 'Data Campaign - We Care',
         ]);
     }
 
-    // Menambah campaign
     public function createCampaign(Request $request)
     {
-        // Validasi input
         $valid = $request->validate([
             'judul_campaign' => 'required|string',
-            'category_id' => 'required|exists:kategoris,id',
             'deskripsi_campaign' => 'required',
             'foto_campaign' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'penggalang_dana_id' => 'required|exists:kuisioner_penggalang_danas,id', // Menambahkan validasi penggalang dana
+            'penggalang_dana_id' => 'required|exists:kuisioner_penggalang_danas,id',
+            'kategori_pengajuan' => 'required|string',
+            'jumlah_dana_dibutuhkan' => 'required|numeric',
+            'jumlah_tanggungan_keluarga' => 'required|integer',
+            'pekerjaan' => 'required|string',
+            'kondisi_kesehatan' => 'required|string',
+            'kebutuhan_mendesak' => 'required|string',
+            'lama_pengajuan' => 'required|string',
+            'status_korban' => 'required|string',
         ]);
 
-        // Menyimpan foto campaign
         $imageName = time() . '.' . $request->foto_campaign->extension();
         $request->foto_campaign->move(public_path('storage/images/campaign'), $imageName);
 
-        // Ambil data penggalang dana
         $penggalangDana = KuisionerPenggalangDana::findOrFail($request->penggalang_dana_id);
+        $tglMulaiCampaign = Carbon::now();
+        $lamaPengajuan = (int) $penggalangDana->lama_pengajuan;
+        $tglAkhirCampaign = $tglMulaiCampaign->copy()->addDays($lamaPengajuan); // Ubah dari months ke days
 
-        // Menyimpan campaign
         Campaign::create([
             'user_id' => Auth::id(),
-            'category_id' => $request->category_id,
             'foto_campaign' => $imageName,
             'judul_campaign' => $request->judul_campaign,
             'deskripsi_campaign' => $request->deskripsi_campaign,
             'slug_campaign' => str()->slug($request->judul_campaign),
-            'tgl_mulai_campaign' => Carbon::now(),
-            'tgl_akhir_campaign' => $request->tgl_akhir,
-            'target_campaign' => $request->target_campaign,
-            'status_campaign' => 0, // Pending
+            'tgl_mulai_campaign' => $tglMulaiCampaign,
+            'tgl_akhir_campaign' => $tglAkhirCampaign,
+            'target_campaign' => $request->jumlah_dana_dibutuhkan,
+            'status_campaign' => 0,
             'penggalang_dana_id' => $request->penggalang_dana_id,
-            'kategori_pengajuan' => $penggalangDana->kategori_pengajuan,
-            'jumlah_dana_dibutuhkan' => $penggalangDana->jumlah_dana_dibutuhkan,
-            'jumlah_tanggungan_keluarga' => $penggalangDana->jumlah_tanggungan_keluarga,
-            'pekerjaan' => $penggalangDana->pekerjaan,
-            'kondisi_kesehatan' => $penggalangDana->kondisi_kesehatan,
-            'kebutuhan_mendesak' => $penggalangDana->kebutuhan_mendesak,
-            'lama_pengajuan' => $penggalangDana->lama_pengajuan,
-            'status_korban' => $penggalangDana->status_korban,
+            'kategori_pengajuan' => $request->kategori_pengajuan,
+            'jumlah_dana_dibutuhkan' => $request->jumlah_dana_dibutuhkan,
+            'jumlah_tanggungan_keluarga' => $request->jumlah_tanggungan_keluarga,
+            'pekerjaan' => $request->pekerjaan,
+            'kondisi_kesehatan' => $request->kondisi_kesehatan,
+            'kebutuhan_mendesak' => $request->kebutuhan_mendesak,
+            'lama_pengajuan' => $request->lama_pengajuan,
+            'status_korban' => $request->status_korban,
+            'no_rekening' => $penggalangDana->no_rekening,
+            'no_whatsapp' => $penggalangDana->no_whatsapp,
+            'no_rekening_admin' => 'BNI 12345678',
+            'no_whatsapp_admin' => '0812345678',
         ]);
 
         return redirect('/admin/campaign/campaign')->with('message', 'Postingan Donasi berhasil ditambahkan');
     }
 
-    // Mengedit status campaign
-    public function editstatuscampaign(Request $request)
+    public function editCampaign(Request $request)
     {
-        $valid = $request->validate([
-            'id' => 'required',
-            'status' => 'required|in:0,1,2,3', // Status yang bisa dipilih
-        ]);
-
         $campaign = Campaign::findOrFail($request->id);
-        $campaign->status_campaign = $request->status;
+
+        $valid = $request->validate([
+            'id' => 'required|exists:campaigns,id',
+            'judul_campaign' => 'required|string',
+            'deskripsi_campaign' => 'required',
+            'foto_campaign' => 'image|mimes:jpeg,png,jpg|max:2048', // optional
+            'penggalang_dana_id' => 'required|exists:kuisioner_penggalang_danas,id',
+        ]);
+        
+        // Handle foto_campaign update
+        if ($request->hasFile('foto_campaign')) {
+            // Hapus foto lama jika ada
+            if ($campaign->foto_campaign) {
+                $oldImagePath = public_path('storage/images/campaign/' . $campaign->foto_campaign);
+                if (File::exists($oldImagePath)) {
+                    File::delete($oldImagePath);
+                }
+            }
+
+            // Upload foto baru
+            $imageName = time() . '.' . $request->foto_campaign->extension();
+            $request->foto_campaign->move(public_path('storage/images/campaign'), $imageName);
+            $campaign->foto_campaign = $imageName;
+        }
+
+        $campaign->judul_campaign = $request->judul_campaign;
+        $campaign->deskripsi_campaign = $request->deskripsi_campaign;
+        $campaign->slug_campaign = str()->slug($request->judul_campaign);
+        $campaign->penggalang_dana_id = $request->penggalang_dana_id;
+        
         $campaign->save();
 
-        return redirect('/admin/campaign/campaign')->with('message', 'Status campaign berhasil diperbarui');
+        return redirect('/admin/campaign/campaign')->with('message', 'Postingan Donasi berhasil diperbarui');
     }
 
-    // Menghapus campaign
+    public function lihatcampaign($id)
+    {
+        $campaign = Campaign::with('kuisioner', 'user')->findOrFail($id);
+        return view('admin.lihatcampaign', [
+            'campaign' => $campaign,
+            'title' => 'Detail Campaign - We Care'
+        ]);
+    }
+
     public function deletecampaign($id)
     {
         $campaign = Campaign::findOrFail($id);
+        // Hapus juga file fotonya
+        if ($campaign->foto_campaign) {
+            $imagePath = public_path('storage/images/campaign/' . $campaign->foto_campaign);
+            if (File::exists($imagePath)) {
+                File::delete($imagePath);
+            }
+        }
         $campaign->delete();
 
         return redirect('/admin/campaign/campaign')->with('message', 'Postingan Donasi berhasil dihapus');
     }
 
-    // Melihat detail campaign
-    public function lihatcampaign($id)
+    // Metode-metode lain yang sudah ada tidak saya ubah di sini untuk menghindari redudansi, pastikan Anda menggabungkannya dengan kode yang sudah ada.
+    public function getPenggalangDanaData($id)
     {
-        $campaign = Campaign::findOrFail($id);
-        return view('admin.lihatcampaign', [
-            'campaign' => $campaign,
-            'title' => 'Detail Campaign - We Care',
+        $penggalangDana = KuisionerPenggalangDana::findOrFail($id);
+        return response()->json($penggalangDana);
+    }
+
+
+    // Halaman untuk berita campaign
+    public function news()
+    {
+        $news = Berita::with('user')->get();
+        return view('admin.berita', [
+            'title' => 'Berita Campaign - We Care',
+            'news'  => $news,
         ]);
     }
 
-    public function getPenggalangDanaData($id)
-    {
-        // Ambil data penggalang dana berdasarkan ID
-        $penggalangDana = KuisionerPenggalangDana::findOrFail($id);
-
-        // Mengembalikan data ke frontend dalam format JSON
-        return response()->json($penggalangDana);
-    }
     
     // Menambah berita campaign
     public function tambahnews()
