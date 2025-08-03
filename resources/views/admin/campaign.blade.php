@@ -58,13 +58,28 @@
                             </thead>
                             <tbody>
                                 @foreach ($campaigns as $key => $item)
+                                    @php
+                                        $tgl_akhir = \Carbon\Carbon::parse($item->tgl_akhir_campaign);
+                                        $today = \Carbon\Carbon::now();
+                                        $sisa_waktu = $tgl_akhir->diffInDays($today);
+
+                                        // Tambahkan kelas CSS 'table-danger' jika waktu sudah habis
+                                        $row_class = $sisa_waktu <= 0 ? 'table-danger' : '';
+                                    @endphp
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ $item->judul_campaign }}</td>
                                         <td>{{ $item->kategori_pengajuan }}</td>
                                         <td>{{ $item->kuisioner->nama ?? 'Penggalang Dana Tidak Ditemukan' }}</td>
                                         <td>{{ \Carbon\Carbon::parse($item->tgl_mulai_campaign)->format('d-m-Y') }}</td>
-                                        <td>{{ $item->lama_pengajuan }} hari lagi</td>
+                                        <td>
+                                            @php
+                                                $tgl_akhir = \Carbon\Carbon::parse($item->tgl_akhir_campaign);
+                                                $today = \Carbon\Carbon::now();
+                                                $sisa_waktu = $tgl_akhir->diffInDays($today);
+                                            @endphp
+                                            {{ $sisa_waktu > 0 ? $sisa_waktu . ' hari lagi' : 'Selesai' }}
+                                        </td>
                                         <td>
                                             <div class="d-flex gap-2">
                                                 <a href="#" class="btn" data-bs-toggle="modal"
@@ -81,6 +96,7 @@
                                             </div>
                                         </td>
                                     </tr>
+
                                     <div class="modal fade" id="editCampaignModal{{ $item->id }}" tabindex="-1"
                                         aria-labelledby="editCampaignModalLabel{{ $item->id }}" aria-hidden="true"
                                         data-bs-backdrop="static" data-bs-keyboard="false">
@@ -88,8 +104,7 @@
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h5 class="modal-title" id="editCampaignModalLabel{{ $item->id }}">
-                                                        Edit
-                                                        Postingan Donasi</h5>
+                                                        Edit Postingan Donasi</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                         aria-label="Close"></button>
                                                 </div>
@@ -98,6 +113,7 @@
                                                         enctype="multipart/form-data">
                                                         @csrf
                                                         <input type="hidden" name="id" value="{{ $item->id }}">
+
                                                         <div class="mb-3">
                                                             <label for="judul_campaign" class="form-label">Judul
                                                                 Campaign</label>
@@ -108,23 +124,86 @@
                                                         </div>
 
                                                         <div class="mb-3">
-                                                            <label for="penggalang_dana_id" class="form-label">Pilih
-                                                                Penggalang
-                                                                Dana</label>
-                                                            <select name="penggalang_dana_id"
-                                                                id="penggalang_dana_id_{{ $item->id }}"
-                                                                class="form-select" required>
-                                                                <option value="" disabled>Pilih Penggalang Dana
-                                                                </option>
-                                                                @foreach ($penggalangDanas as $penggalangDana)
-                                                                    <option value="{{ $penggalangDana->id }}"
-                                                                        {{ old('penggalang_dana_id', $item->penggalang_dana_id) == $penggalangDana->id ? 'selected' : '' }}>
-                                                                        {{ $penggalangDana->nama }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
+                                                            <label for="penggalang_dana_nama" class="form-label">Nama
+                                                                Penggalang Dana</label>
+                                                            <input type="text" class="form-control"
+                                                                id="penggalang_dana_nama"
+                                                                value="{{ $item->kuisioner->nama ?? 'Penggalang Dana Tidak Ditemukan' }}"
+                                                                readonly>
+                                                            <input type="hidden" name="penggalang_dana_id"
+                                                                value="{{ $item->penggalang_dana_id }}">
                                                         </div>
 
+                                                        <div class="mb-3">
+                                                            <label for="kategori_pengajuan" class="form-label">Kategori
+                                                                Pengajuan</label>
+                                                            <input type="text" name="kategori_pengajuan"
+                                                                id="kategori_pengajuan" class="form-control"
+                                                                value="{{ $item->kategori_pengajuan }}" readonly>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="jumlah_dana_dibutuhkan" class="form-label">Jumlah
+                                                                Dana Dibutuhkan</label>
+                                                            <input type="number" name="jumlah_dana_dibutuhkan"
+                                                                id="jumlah_dana_dibutuhkan" class="form-control"
+                                                                value="{{ $item->jumlah_dana_dibutuhkan }}" readonly>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="jumlah_tanggungan_keluarga"
+                                                                class="form-label">Jumlah Tanggungan Keluarga</label>
+                                                            <input type="number" name="jumlah_tanggungan_keluarga"
+                                                                id="jumlah_tanggungan_keluarga" class="form-control"
+                                                                value="{{ $item->jumlah_tanggungan_keluarga }}" readonly>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="pekerjaan" class="form-label">Pekerjaan</label>
+                                                            <input type="text" name="pekerjaan" id="pekerjaan"
+                                                                class="form-control" value="{{ $item->pekerjaan }}"
+                                                                readonly>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="kondisi_kesehatan" class="form-label">Kondisi
+                                                                Kesehatan</label>
+                                                            <input type="text" name="kondisi_kesehatan"
+                                                                id="kondisi_kesehatan" class="form-control"
+                                                                value="{{ $item->kondisi_kesehatan }}" readonly>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="kebutuhan_mendesak" class="form-label">Kebutuhan
+                                                                Mendesak</label>
+                                                            <input type="text" name="kebutuhan_mendesak"
+                                                                id="kebutuhan_mendesak" class="form-control"
+                                                                value="{{ $item->kebutuhan_mendesak }}" readonly>
+                                                        </div>
+
+                                                        {{-- TAMBAHAN: Field tanggal mulai yang readonly --}}
+                                                        <div class="mb-3">
+                                                            <label for="tgl_mulai_campaign" class="form-label">Tanggal
+                                                                Mulai Campaign</label>
+                                                            <input type="text" class="form-control"
+                                                                id="tgl_mulai_campaign"
+                                                                value="{{ \Carbon\Carbon::parse($item->tgl_mulai_campaign)->format('d-m-Y') }}"
+                                                                readonly>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="lama_pengajuan" class="form-label">Lama
+                                                                Pengajuan</label>
+                                                            <input type="text" name="lama_pengajuan"
+                                                                id="lama_pengajuan" class="form-control"
+                                                                value="{{ $item->lama_pengajuan }}" readonly>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="status_korban" class="form-label">Status
+                                                                Korban</label>
+                                                            <input type="text" name="status_korban" id="status_korban"
+                                                                class="form-control" value="{{ $item->status_korban }}"
+                                                                readonly>
+                                                        </div>
+
+                                                        {{-- Field yang bisa diubah --}}
                                                         <div class="mb-3">
                                                             <label for="foto_campaign" class="form-label">Foto Postingan
                                                                 Donasi</label>
@@ -217,11 +296,13 @@
                             <label for="penggalang_dana_id" class="form-label">Pilih Penggalang Dana</label>
                             <select name="penggalang_dana_id" id="penggalang_dana_id" class="form-select" required>
                                 <option value="" disabled selected>Pilih Penggalang Dana</option>
-                                @foreach ($penggalangDanas as $penggalangDana)
+                                @forelse ($penggalangDanas as $penggalangDana)
                                     <option value="{{ $penggalangDana->id }}"
                                         {{ old('penggalang_dana_id') == $penggalangDana->id ? 'selected' : '' }}>
                                         {{ $penggalangDana->nama }}</option>
-                                @endforeach
+                                @empty
+                                    <option value="" disabled>Data penggalang dana terbaru belum tersedia</option>
+                                @endforelse
                             </select>
                         </div>
 
@@ -296,6 +377,7 @@
 
     <script>
         $(document).ready(function() {
+            // Logika untuk modal Tambah Postingan Donasi
             $('#penggalang_dana_id').change(function() {
                 var penggalangDanaId = $(this).val();
                 if (penggalangDanaId) {

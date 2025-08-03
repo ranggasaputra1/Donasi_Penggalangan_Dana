@@ -65,61 +65,71 @@
                                         <td>{{ $item->campaign->no_rekening ?? 'N/A' }}</td>
                                         <td>{{ $item->campaign->no_whatsapp ?? 'N/A' }}</td>
                                         <td>
-                                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                                data-bs-target="#confirmModal{{ $item->id }}">Konfirmasi
-                                                Pembayaran</button>
+                                            @if ($item->status_transaksi == 0)
+                                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                                    data-bs-target="#confirmModal{{ $item->id }}">Konfirmasi
+                                                    Pembayaran</button>
+                                            @else
+                                                <small><span class="text-muted">Dana Berhasil Disalurkan</span></small>
+                                            @endif
                                         </td>
                                     </tr>
+
                                     {{-- Modal Konfirmasi Pembayaran --}}
-                                    <div class="modal fade" id="confirmModal{{ $item->id }}" tabindex="-1"
-                                        aria-labelledby="confirmModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="confirmModalLabel">Konfirmasi Pembayaran
-                                                    </h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                                </div>
-                                                <form action="{{ route('transaksi.confirm') }}" method="POST">
-                                                    @csrf
-                                                    <input type="hidden" name="transaksi_id" value="{{ $item->id }}">
-                                                    <div class="modal-body">
-                                                        <p>Apakah Anda yakin sudah mengirimkan dana sebesar **Rp.
-                                                            {{ number_format($item->nominal_transaksi, 0, ',', '.') }}** ke
-                                                            penggalang dana untuk kampanye
-                                                            **{{ $item->campaign->judul_campaign ?? 'Tidak Ditemukan' }}**?
-                                                        </p>
-                                                        <hr>
-                                                        <div class="mb-3">
-                                                            <h6>Bukti Transfer Donatur:</h6>
-                                                            @if ($item->keterangan)
-                                                                <a href="{{ asset('storage/images/proofs/' . $item->keterangan) }}"
-                                                                    target="_blank">
-                                                                    <img src="{{ asset('storage/images/proofs/' . $item->keterangan) }}"
-                                                                        alt="Bukti Transfer" class="img-fluid"
-                                                                        style="max-height: 200px;">
-                                                                </a>
-                                                            @else
-                                                                <p>Tidak ada bukti transfer diunggah.</p>
-                                                            @endif
+                                    @if ($item->status_transaksi == 0)
+                                        <div class="modal fade" id="confirmModal{{ $item->id }}" tabindex="-1"
+                                            aria-labelledby="confirmModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="confirmModalLabel">Konfirmasi Pembayaran
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <form action="{{ route('transaksi.confirm') }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="transaksi_id"
+                                                            value="{{ $item->id }}">
+                                                        <div class="modal-body">
+                                                            <p>Apakah Anda yakin sudah mengirimkan dana sebesar **Rp.
+                                                                {{ number_format($item->nominal_transaksi, 0, ',', '.') }}**
+                                                                ke
+                                                                penggalang dana untuk kampanye
+                                                                **{{ $item->campaign->judul_campaign ?? 'Tidak Ditemukan' }}**?
+                                                            </p>
+                                                            <hr>
+                                                            <div class="mb-3">
+                                                                <h6>Bukti Transfer Donatur:</h6>
+                                                                @if ($item->keterangan)
+                                                                    <a href="{{ asset('storage/images/proofs/' . $item->keterangan) }}"
+                                                                        target="_blank">
+                                                                        <img src="{{ asset('storage/images/proofs/' . $item->keterangan) }}"
+                                                                            alt="Bukti Transfer" class="img-fluid"
+                                                                            style="max-height: 200px;">
+                                                                    </a>
+                                                                @else
+                                                                    <p>Tidak ada bukti transfer diunggah.</p>
+                                                                @endif
+                                                            </div>
+                                                            <hr>
+                                                            <h6>Informasi Penggalang Dana</h6>
+                                                            <p class="mb-1"><strong>No. Rekening:</strong>
+                                                                {{ $item->campaign->no_rekening ?? 'N/A' }}</p>
+                                                            <p><strong>No. WhatsApp:</strong>
+                                                                {{ $item->campaign->no_whatsapp ?? 'N/A' }}</p>
                                                         </div>
-                                                        <hr>
-                                                        <h6>Informasi Penggalang Dana</h6>
-                                                        <p class="mb-1"><strong>No. Rekening:</strong>
-                                                            {{ $item->campaign->no_rekening ?? 'N/A' }}</p>
-                                                        <p><strong>No. WhatsApp:</strong>
-                                                            {{ $item->campaign->no_whatsapp ?? 'N/A' }}</p>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Tutup</button>
-                                                        <button type="submit" class="btn btn-primary">Konfirmasi</button>
-                                                    </div>
-                                                </form>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Tutup</button>
+                                                            <button type="submit"
+                                                                class="btn btn-primary">Konfirmasi</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    @endif
                                 @endforeach
                             </tbody>
                         </table>
