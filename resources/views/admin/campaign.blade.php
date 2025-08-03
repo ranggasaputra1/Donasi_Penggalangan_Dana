@@ -63,21 +63,15 @@
                                         $today = \Carbon\Carbon::now();
                                         $sisa_waktu = $tgl_akhir->diffInDays($today);
 
-                                        // Tambahkan kelas CSS 'table-danger' jika waktu sudah habis
                                         $row_class = $sisa_waktu <= 0 ? 'table-danger' : '';
                                     @endphp
-                                    <tr>
+                                    <tr class="{{ $row_class }}">
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ $item->judul_campaign }}</td>
                                         <td>{{ $item->kategori_pengajuan }}</td>
                                         <td>{{ $item->kuisioner->nama ?? 'Penggalang Dana Tidak Ditemukan' }}</td>
                                         <td>{{ \Carbon\Carbon::parse($item->tgl_mulai_campaign)->format('d-m-Y') }}</td>
                                         <td>
-                                            @php
-                                                $tgl_akhir = \Carbon\Carbon::parse($item->tgl_akhir_campaign);
-                                                $today = \Carbon\Carbon::now();
-                                                $sisa_waktu = $tgl_akhir->diffInDays($today);
-                                            @endphp
                                             {{ $sisa_waktu > 0 ? $sisa_waktu . ' hari lagi' : 'Selesai' }}
                                         </td>
                                         <td>
@@ -86,7 +80,8 @@
                                                     data-bs-target="#editCampaignModal{{ $item->id }}">
                                                     <i class="bi bi-pencil-fill"></i>
                                                 </a>
-                                                <a href="/admin/campaign/campaign/lihat/{{ $item->id }}" class="btn">
+                                                <a href="/admin/campaign/campaign/lihat/{{ $item->id }}"
+                                                    class="btn">
                                                     <i class="bi bi-eye-fill"></i>
                                                 </a>
                                                 <a href="#" class="btn text-danger" data-bs-toggle="modal"
@@ -113,7 +108,6 @@
                                                         enctype="multipart/form-data">
                                                         @csrf
                                                         <input type="hidden" name="id" value="{{ $item->id }}">
-
                                                         <div class="mb-3">
                                                             <label for="judul_campaign" class="form-label">Judul
                                                                 Campaign</label>
@@ -122,7 +116,6 @@
                                                                 value="{{ old('judul_campaign', $item->judul_campaign) }}"
                                                                 required>
                                                         </div>
-
                                                         <div class="mb-3">
                                                             <label for="penggalang_dana_nama" class="form-label">Nama
                                                                 Penggalang Dana</label>
@@ -133,7 +126,6 @@
                                                             <input type="hidden" name="penggalang_dana_id"
                                                                 value="{{ $item->penggalang_dana_id }}">
                                                         </div>
-
                                                         <div class="mb-3">
                                                             <label for="kategori_pengajuan" class="form-label">Kategori
                                                                 Pengajuan</label>
@@ -141,7 +133,6 @@
                                                                 id="kategori_pengajuan" class="form-control"
                                                                 value="{{ $item->kategori_pengajuan }}" readonly>
                                                         </div>
-
                                                         <div class="mb-3">
                                                             <label for="jumlah_dana_dibutuhkan" class="form-label">Jumlah
                                                                 Dana Dibutuhkan</label>
@@ -149,7 +140,6 @@
                                                                 id="jumlah_dana_dibutuhkan" class="form-control"
                                                                 value="{{ $item->jumlah_dana_dibutuhkan }}" readonly>
                                                         </div>
-
                                                         <div class="mb-3">
                                                             <label for="jumlah_tanggungan_keluarga"
                                                                 class="form-label">Jumlah Tanggungan Keluarga</label>
@@ -177,8 +167,6 @@
                                                                 id="kebutuhan_mendesak" class="form-control"
                                                                 value="{{ $item->kebutuhan_mendesak }}" readonly>
                                                         </div>
-
-                                                        {{-- TAMBAHAN: Field tanggal mulai yang readonly --}}
                                                         <div class="mb-3">
                                                             <label for="tgl_mulai_campaign" class="form-label">Tanggal
                                                                 Mulai Campaign</label>
@@ -187,7 +175,6 @@
                                                                 value="{{ \Carbon\Carbon::parse($item->tgl_mulai_campaign)->format('d-m-Y') }}"
                                                                 readonly>
                                                         </div>
-
                                                         <div class="mb-3">
                                                             <label for="lama_pengajuan" class="form-label">Lama
                                                                 Pengajuan</label>
@@ -202,8 +189,6 @@
                                                                 class="form-control" value="{{ $item->status_korban }}"
                                                                 readonly>
                                                         </div>
-
-                                                        {{-- Field yang bisa diubah --}}
                                                         <div class="mb-3">
                                                             <label for="foto_campaign" class="form-label">Foto Postingan
                                                                 Donasi</label>
@@ -214,13 +199,11 @@
                                                                     alt="Foto Campaign" width="150">
                                                             </div>
                                                         </div>
-
                                                         <div class="mb-3">
                                                             <label for="deskripsi_campaign" class="form-label">Deskripsi
                                                                 Campaign</label>
                                                             <textarea class="form-control" id="deskripsi_campaign" name="deskripsi_campaign" required>{{ old('deskripsi_campaign', $item->deskripsi_campaign) }}</textarea>
                                                         </div>
-
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary"
                                                                 data-bs-dismiss="modal">Tutup</button>
@@ -232,7 +215,6 @@
                                             </div>
                                         </div>
                                     </div>
-
                                     <div class="modal fade" id="deleteCampaignModal{{ $item->id }}" tabindex="-1"
                                         aria-labelledby="deleteCampaignModalLabel{{ $item->id }}" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered">
@@ -265,7 +247,6 @@
             </div>
         </section>
     </div>
-
     <div class="modal fade" id="createCampaignModal" tabindex="-1" aria-labelledby="createCampaignModalLabel"
         aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -287,14 +268,14 @@
                     <form method="POST" action="{{ route('campaign.create') }}" enctype="multipart/form-data">
                         @csrf
                         <div class="mb-3">
-                            <label for="judul_campaign" class="form-label">Judul Campaign</label>
-                            <input type="text" class="form-control" id="judul_campaign" name="judul_campaign"
+                            <label for="judul_campaign_create" class="form-label">Judul Campaign</label>
+                            <input type="text" class="form-control" id="judul_campaign_create" name="judul_campaign"
                                 value="{{ old('judul_campaign') }}" required>
                         </div>
-
                         <div class="mb-3">
-                            <label for="penggalang_dana_id" class="form-label">Pilih Penggalang Dana</label>
-                            <select name="penggalang_dana_id" id="penggalang_dana_id" class="form-select" required>
+                            <label for="penggalang_dana_id_create" class="form-label">Pilih Penggalang Dana</label>
+                            <select name="penggalang_dana_id" id="penggalang_dana_id_create" class="form-select"
+                                required>
                                 <option value="" disabled selected>Pilih Penggalang Dana</option>
                                 @forelse ($penggalangDanas as $penggalangDana)
                                     <option value="{{ $penggalangDana->id }}"
@@ -305,60 +286,59 @@
                                 @endforelse
                             </select>
                         </div>
-
-                        <div id="kuisioner-data" style="display:none;">
+                        <div id="kuisioner-data-create" style="display:none;">
                             <div class="mb-3">
-                                <label for="kategori_pengajuan" class="form-label">Kategori Pengajuan</label>
-                                <input type="text" name="kategori_pengajuan" id="kategori_pengajuan"
+                                <label for="kategori_pengajuan_create" class="form-label">Kategori Pengajuan</label>
+                                <input type="text" name="kategori_pengajuan" id="kategori_pengajuan_create"
                                     class="form-control" readonly>
                             </div>
                             <div class="mb-3">
-                                <label for="jumlah_dana_dibutuhkan" class="form-label">Jumlah Dana Dibutuhkan</label>
-                                <input type="number" name="jumlah_dana_dibutuhkan" id="jumlah_dana_dibutuhkan"
+                                <label for="jumlah_dana_dibutuhkan_create" class="form-label">Jumlah Dana
+                                    Dibutuhkan</label>
+                                <input type="number" name="jumlah_dana_dibutuhkan" id="jumlah_dana_dibutuhkan_create"
                                     class="form-control" readonly>
                             </div>
                             <div class="mb-3">
-                                <label for="jumlah_tanggungan_keluarga" class="form-label">Jumlah Tanggungan
+                                <label for="jumlah_tanggungan_keluarga_create" class="form-label">Jumlah Tanggungan
                                     Keluarga</label>
-                                <input type="number" name="jumlah_tanggungan_keluarga" id="jumlah_tanggungan_keluarga"
-                                    class="form-control" readonly>
+                                <input type="number" name="jumlah_tanggungan_keluarga"
+                                    id="jumlah_tanggungan_keluarga_create" class="form-control" readonly>
                             </div>
                             <div class="mb-3">
-                                <label for="pekerjaan" class="form-label">Pekerjaan</label>
-                                <input type="text" name="pekerjaan" id="pekerjaan" class="form-control" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="kondisi_kesehatan" class="form-label">Kondisi Kesehatan</label>
-                                <input type="text" name="kondisi_kesehatan" id="kondisi_kesehatan"
-                                    class="form-control" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="kebutuhan_mendesak" class="form-label">Kebutuhan Mendesak</label>
-                                <input type="text" name="kebutuhan_mendesak" id="kebutuhan_mendesak"
-                                    class="form-control" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="lama_pengajuan" class="form-label">Lama Pengajuan</label>
-                                <input type="text" name="lama_pengajuan" id="lama_pengajuan" class="form-control"
+                                <label for="pekerjaan_create" class="form-label">Pekerjaan</label>
+                                <input type="text" name="pekerjaan" id="pekerjaan_create" class="form-control"
                                     readonly>
                             </div>
                             <div class="mb-3">
-                                <label for="status_korban" class="form-label">Status Korban</label>
-                                <input type="text" name="status_korban" id="status_korban" class="form-control"
-                                    readonly>
+                                <label for="kondisi_kesehatan_create" class="form-label">Kondisi Kesehatan</label>
+                                <input type="text" name="kondisi_kesehatan" id="kondisi_kesehatan_create"
+                                    class="form-control" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="kebutuhan_mendesak_create" class="form-label">Kebutuhan Mendesak</label>
+                                <input type="text" name="kebutuhan_mendesak" id="kebutuhan_mendesak_create"
+                                    class="form-control" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="lama_pengajuan_create" class="form-label">Lama Pengajuan</label>
+                                <input type="text" name="lama_pengajuan" id="lama_pengajuan_create"
+                                    class="form-control" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="status_korban_create" class="form-label">Status Korban</label>
+                                <input type="text" name="status_korban" id="status_korban_create"
+                                    class="form-control" readonly>
                             </div>
                         </div>
-
                         <div class="mb-3">
-                            <label for="foto_campaign" class="form-label">Foto Postingan Donasi</label>
-                            <input type="file" class="form-control" id="foto_campaign" name="foto_campaign" required>
+                            <label for="foto_campaign_create" class="form-label">Foto Postingan Donasi</label>
+                            <input type="file" class="form-control" id="foto_campaign_create" name="foto_campaign"
+                                required>
                         </div>
-
                         <div class="mb-3">
-                            <label for="deskripsi_campaign" class="form-label">Deskripsi Campaign</label>
-                            <textarea class="form-control" id="deskripsi_campaign" name="deskripsi_campaign" required>{{ old('deskripsi_campaign') }}</textarea>
+                            <label for="deskripsi_campaign_create" class="form-label">Deskripsi Campaign</label>
+                            <textarea class="form-control" id="deskripsi_campaign_create" name="deskripsi_campaign" required>{{ old('deskripsi_campaign') }}</textarea>
                         </div>
-
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                             <button type="submit" class="btn btn-primary">Buat Postingan</button>
@@ -378,30 +358,31 @@
     <script>
         $(document).ready(function() {
             // Logika untuk modal Tambah Postingan Donasi
-            $('#penggalang_dana_id').change(function() {
+            $('#penggalang_dana_id_create').change(function() {
                 var penggalangDanaId = $(this).val();
                 if (penggalangDanaId) {
                     $.ajax({
                         url: '/admin/campaign/get-penggalang-dana/' + penggalangDanaId,
                         type: 'GET',
                         success: function(response) {
-                            $('#kategori_pengajuan').val(response.kategori_pengajuan);
-                            $('#jumlah_dana_dibutuhkan').val(response.jumlah_dana_dibutuhkan);
-                            $('#jumlah_tanggungan_keluarga').val(response
+                            $('#kategori_pengajuan_create').val(response.kategori_pengajuan);
+                            $('#jumlah_dana_dibutuhkan_create').val(response
+                                .jumlah_dana_dibutuhkan);
+                            $('#jumlah_tanggungan_keluarga_create').val(response
                                 .jumlah_tanggungan_keluarga);
-                            $('#pekerjaan').val(response.pekerjaan);
-                            $('#kondisi_kesehatan').val(response.kondisi_kesehatan);
-                            $('#kebutuhan_mendesak').val(response.kebutuhan_mendesak);
-                            $('#lama_pengajuan').val(response.lama_pengajuan);
-                            $('#status_korban').val(response.status_korban);
-                            $('#kuisioner-data').show();
+                            $('#pekerjaan_create').val(response.pekerjaan);
+                            $('#kondisi_kesehatan_create').val(response.kondisi_kesehatan);
+                            $('#kebutuhan_mendesak_create').val(response.kebutuhan_mendesak);
+                            $('#lama_pengajuan_create').val(response.lama_pengajuan);
+                            $('#status_korban_create').val(response.status_korban);
+                            $('#kuisioner-data-create').show();
                         },
                         error: function() {
                             alert('Terjadi kesalahan saat mengambil data penggalang dana.');
                         }
                     });
                 } else {
-                    $('#kuisioner-data').hide();
+                    $('#kuisioner-data-create').hide();
                 }
             });
         });

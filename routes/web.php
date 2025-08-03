@@ -62,6 +62,8 @@ Route::post('/transaksi/callback', [MidtransCallbackController::class, 'receive'
  // Rute untuk halaman donasi publik
     Route::get('/donasi', [CampaignController::class, 'showCampaignsForDonors'])->name('donasi.index');
 
+    Route::get('/donasi/urgent', [CampaignController::class, 'getUrgentCampaignsFromPython'])->name('donasi.urgent');
+
     // Rute untuk halaman detail campaign donasi
     Route::get('/donasi/{slug}', [CampaignController::class, 'showCampaignDetail'])->name('donasi.detail');
 
@@ -80,6 +82,8 @@ Route::post('/transaksi/callback', [MidtransCallbackController::class, 'receive'
 
     Route::get('/kuisioner', [KuisionerController::class, 'form']);
     Route::post('/kuisioner', [KuisionerController::class, 'submit']);
+
+    
 
 
 /* Dashboard Admin */

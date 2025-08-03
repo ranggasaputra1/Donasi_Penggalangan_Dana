@@ -278,7 +278,6 @@
         .urgent-cta-wrapper {
             display: flex;
             justify-content: center;
-            /* BARIS YANG DIUBAH */
             margin-bottom: 2rem;
         }
 
@@ -289,7 +288,6 @@
             font-size: 0.9rem;
             font-weight: 700;
             color: white;
-            /* Pastikan warna teks default putih */
             background: linear-gradient(135deg, var(--urgent-color), var(--urgent-hover));
             border: none;
             border-radius: 2rem;
@@ -298,11 +296,11 @@
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             letter-spacing: 0.5px;
             text-transform: uppercase;
+            cursor: pointer;
         }
 
         .btn-urgent:hover {
             color: white;
-            /* Ditambahkan: Menjaga warna teks tetap putih saat hover */
             background: linear-gradient(135deg, var(--urgent-hover), #e74c3c);
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
@@ -359,20 +357,81 @@
                 gap: 0.5rem;
             }
         }
+
+        /* Gaya CSS untuk loading screen yang diperbarui */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: none;
+            /* Awalnya disembunyikan */
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .loading-overlay.visible {
+            display: flex;
+            /* Ditampilkan saat kelas 'visible' ditambahkan */
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--primary-color);
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        .loading-text {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
+
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Sedang menjalankan algoritma Naive Bayes...</div>
+    </div>
+
     <div class="container donation-section">
         {{-- Hero Banner --}}
         <div class="hero-banner text-center">
             <h2 class="section-title">Ulurkan Tangan, Sebarkan Harapan. ✨</h2>
-            <p class="section-subtitle">Kebaikan kecil Anda adalah perubahan besar. Pilih kampanye yang menyentuh hati dan
+            <p class="section-subtitle">Kebaikan kecil Anda adalah perubahan besar. Pilih Postingan Donasi yang menyentuh
+                hati dan
                 wujudkan dampak positif yang nyata. ❤️</p>
         </div>
 
         {{-- Tombol Donasi Urgent Baru --}}
         <div class="urgent-cta-wrapper">
-            <a href="" class="btn-urgent">
+            <button id="btn-urgent" class="btn-urgent">
                 <i class="fas fa-fire"></i> DONASI URGENT
-            </a>
+            </button>
         </div>
 
         <div class="row g-4">
@@ -438,9 +497,37 @@
                 </div>
             @empty
                 <div class="col-12 text-center">
-                    <p>Saat ini belum ada kampanye donasi yang aktif. Terima kasih atas niat baik Anda!</p>
+                    <p>Saat ini belum ada postingan donasi yang aktif. Terima kasih atas niat baik Anda!</p>
                 </div>
             @endforelse
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urgentBtn = document.getElementById('btn-urgent');
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const targetUrl = '{{ route('donasi.urgent') }}';
+
+            // Event listener untuk saat halaman pertama kali dimuat atau kembali dari cache
+            window.addEventListener('pageshow', function(event) {
+                // `persisted` adalah properti yang menunjukkan apakah halaman dimuat dari back-forward cache
+                if (event.persisted) {
+                    loadingOverlay.style.display = 'none';
+                    loadingOverlay.classList.remove('visible');
+                }
+            });
+
+            urgentBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                loadingOverlay.style.display = 'flex';
+                loadingOverlay.classList.add('visible');
+
+                setTimeout(function() {
+                    window.location.href = targetUrl;
+                }, 2500);
+            });
+        });
+    </script>
 @endsection

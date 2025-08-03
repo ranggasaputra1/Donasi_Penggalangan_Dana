@@ -10,10 +10,17 @@ use App\Models\Kategori;
 use App\Models\Transaksi;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Rubix\ML\Datasets\Labeled;
 use App\Models\RiwayatTransaksi;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+
+// Import kelas-kelas Rubix ML yang dibutuhkan
+use Rubix\ML\Classifiers\GaussianNB;
+use Rubix\ML\Classifiers\NaiveBayes;
 use App\Models\KuisionerPenggalangDana;
+use Rubix\ML\Datasets\Unlabeled; // BARIS BARU
+
 
 class CampaignController extends Controller
 {
@@ -43,7 +50,6 @@ class CampaignController extends Controller
         'title' => 'Data Campaign - We Care',
     ]);
 }
-
 
     public function createCampaign(Request $request)
     {
@@ -159,6 +165,85 @@ class CampaignController extends Controller
 
         return redirect('/admin/campaign/campaign')->with('message', 'Postingan Donasi berhasil dihapus');
     }
+
+        public function getUrgentCampaignsFromPython()
+    {
+        // 1. Ambil Data Historis untuk Melatih Model
+        // Fitur: [sisa_hari, persentase_dana, kategori_pengajuan, jumlah_tanggungan, penghasilan, status_rumah, punya_kendaraan]
+        // Kategori Pengajuan: 'kesehatan' => 0, 'pendidikan' => 1, 'kemanusiaan' => 2
+        // Status Rumah: 'milik' => 0, 'kontrak' => 1, 'numpang' => 2
+        // Punya Kendaraan: 'Tidak' => 0, 'Ya' => 1
+
+        $samples = [
+            // Contoh Urgent (Label '1') yang diperbarui
+            [4, 0.25, 0, 3, 1500000, 1, 0], // Tambahkan data spesifik seperti yang Anda sebutkan
+            [2, 0.1, 0, 3, 1000000, 1, 0],
+            [3, 0.2, 0, 4, 1500000, 2, 0],
+            [1, 0.05, 0, 2, 800000, 1, 0],
+            [5, 0.3, 2, 5, 1200000, 2, 0],
+            
+            // Contoh Tidak Urgent (Label '0')
+            [15, 0.8, 1, 1, 3500000, 0, 1],
+            [20, 0.9, 1, 2, 4000000, 0, 1],
+            [10, 0.7, 2, 3, 2000000, 1, 1],
+            [8, 0.6, 1, 1, 2500000, 0, 0],
+            [6, 0.5, 1, 2, 2000000, 1, 0],
+        ];
+        
+        $labels = ['1', '1', '1', '1', '1', '0', '0', '0', '0', '0']; // Labels harus disesuaikan
+
+        $dataset = new Labeled($samples, $labels);
+
+        // 2. Melatih Model Naive Bayes
+        $classifier = new GaussianNB();
+        $classifier->train($dataset);
+
+        // 3. Ambil data kampanye dari database untuk diprediksi
+        $campaigns = Campaign::with('kuisioner')->select(
+            'id', 'judul_campaign', 'dana_terkumpul', 'target_campaign', 
+            'tgl_akhir_campaign', 'foto_campaign', 'kategori_pengajuan', 
+            'deskripsi_campaign', 'slug_campaign', 'penggalang_dana_id'
+        )->get();
+
+        $urgentCampaigns = [];
+        $kategoriMap = ['kesehatan' => 0, 'pendidikan' => 1, 'kemanusiaan' => 2];
+        $statusRumahMap = ['milik' => 0, 'kontrak' => 1, 'numpang' => 2];
+
+        // 4. Lakukan prediksi untuk setiap kampanye
+        foreach ($campaigns as $campaign) {
+            if ($campaign->kuisioner) {
+                $sisaHari = Carbon::parse($campaign->tgl_akhir_campaign)->diffInDays(Carbon::now());
+                $persentaseDana = ($campaign->target_campaign > 0) ? ($campaign->dana_terkumpul / $campaign->target_campaign) : 0;
+                
+                $kategoriEncoded = $kategoriMap[$campaign->kategori_pengajuan] ?? -1;
+                $jumlahTanggungan = (int) $campaign->kuisioner->jumlah_tanggungan_keluarga;
+                $penghasilan = (float) $campaign->kuisioner->penghasilan_bulanan;
+                
+                $statusRumahEncoded = $statusRumahMap[$campaign->kuisioner->status_rumah] ?? -1;
+                $punyaKendaraan = (int) $campaign->kuisioner->punya_kendaraan;
+                
+                $predictionSample = new Unlabeled([[
+                    (float) $sisaHari,
+                    (float) $persentaseDana,
+                    (int) $kategoriEncoded,
+                    (int) $jumlahTanggungan,
+                    (float) $penghasilan,
+                    (int) $statusRumahEncoded,
+                    (int) $punyaKendaraan
+                ]]);
+
+                $prediction = $classifier->predict($predictionSample);
+
+                if ($prediction[0] == '1') {
+                    $campaign->sisa_hari = $sisaHari;
+                    $urgentCampaigns[] = $campaign;
+                }
+            }
+        }
+        
+        return view('donasi.urgent', ['campaigns' => $urgentCampaigns]);
+    }   
+
 
     // Metode-metode lain yang sudah ada tidak saya ubah di sini untuk menghindari redudansi, pastikan Anda menggabungkannya dengan kode yang sudah ada.
     public function getPenggalangDanaData($id)
