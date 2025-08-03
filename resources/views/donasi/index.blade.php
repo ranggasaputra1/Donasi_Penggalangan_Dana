@@ -277,9 +277,9 @@
         /* Gaya baru untuk tombol donasi mendesak */
         .urgent-cta-wrapper {
             display: flex;
-            justify-content: flex-end;
+            justify-content: center;
+            /* BARIS YANG DIUBAH */
             margin-bottom: 2rem;
-            padding-right: 1.5rem;
         }
 
         .btn-urgent {
@@ -436,11 +436,11 @@
                         </div>
                     </div>
                 </div>
+            @empty
+                <div class="col-12 text-center">
+                    <p>Saat ini belum ada kampanye donasi yang aktif. Terima kasih atas niat baik Anda!</p>
+                </div>
+            @endforelse
         </div>
-    @empty
-        <div class="col-12 text-center">
-            <p>Saat ini belum ada kampanye donasi yang aktif. Terima kasih atas niat baik Anda!</p>
-        </div>
-        @endforelse
     </div>
 @endsection
