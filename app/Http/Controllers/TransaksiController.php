@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Transaksi;
-use App\Models\Campaign;
-use App\Models\User;
 use Carbon\Carbon;
-use Midtrans\Config;
 use Midtrans\Snap;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Midtrans\Config;
+use App\Models\Campaign;
+use App\Models\Transaksi;
 use Midtrans\Transaction;
+use Illuminate\Http\Request;
+use App\Models\RiwayatTransaksi;
+use Illuminate\Support\Facades\Auth;
 
 class TransaksiController extends Controller
 {
@@ -96,5 +97,36 @@ class TransaksiController extends Controller
             'campaign' => $campaign,
             'snapToken' => $snapToken,
         ]);
+    }
+     // METHOD UNTUK MENOLAK DONASI
+    public function rejectTransaksi(Request $request)
+    {
+        $request->validate([
+            'transaksi_id' => 'required|exists:transaksi,id',
+            'keterangan_admin' => 'required|string|max:255',
+        ]);
+        $transaksi = Transaksi::findOrFail($request->transaksi_id);
+    
+        // Cek status transaksi, hanya bisa menolak jika masih Pending (0)
+        if ($transaksi->status_transaksi == 0) {
+            // Update status transaksi di tabel utama
+            $transaksi->status_transaksi = 2; // Status Dibatalkan
+            $transaksi->keterangan_admin = $request->keterangan_admin;
+            $transaksi->save();
+
+            // Penyesuaian: Tambahkan record ke tabel riwayat_transaksi
+            RiwayatTransaksi::create([
+                'transaksi_id' => $transaksi->id,
+                'campaign_id' => $transaksi->campaign_id,
+                'user_id' => $transaksi->user_id,
+                'nama_donatur' => $transaksi->nama,
+                'nominal' => $transaksi->nominal_transaksi,
+                'tgl_konfirmasi' => Carbon::now(),
+                'status' => 2, // Status Dibatalkan
+                'keterangan_admin' => $request->keterangan_admin,
+            ]);
+        }
+    
+        return redirect()->back()->with('success', 'Transaksi berhasil ditolak dan status diubah menjadi Dibatalkan.');
     }
 }

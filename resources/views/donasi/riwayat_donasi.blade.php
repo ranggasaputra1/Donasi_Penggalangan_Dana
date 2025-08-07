@@ -78,10 +78,11 @@
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Nama Campaign</th>
+                                    <th>Judul Postingan Donasi</th>
                                     <th>Nominal</th>
                                     <th>Tgl. Donasi</th>
                                     <th>Status</th>
+                                    <th>Keterangan</th>
                                     <th>Bukti Transfer</th>
                                 </tr>
                             </thead>
@@ -104,6 +105,15 @@
                                             @endif
                                         </td>
                                         <td>
+                                            @if ($item->status_transaksi == 1)
+                                                <small>Dana Donasi Berhasil Disalurkan</small>
+                                            @elseif ($item->status_transaksi == 2)
+                                                <small>{{ $item->keterangan_admin ?? 'Tidak ada keterangan.' }}</small>
+                                            @else
+                                                <small>-</small>
+                                            @endif
+                                        </td>
+                                        <td>
                                             @if ($item->keterangan)
                                                 <a href="{{ asset('storage/images/proofs/' . $item->keterangan) }}"
                                                     target="_blank">
@@ -118,7 +128,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="no-data">
+                                        <td colspan="7" class="no-data">
                                             <i class="bi bi-info-circle me-2"></i>Anda belum memiliki riwayat donasi.
                                         </td>
                                     </tr>

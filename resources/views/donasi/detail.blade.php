@@ -201,7 +201,7 @@
                     <h4 class="text-center mb-4">Bantu Sekarang 💚</h4>
 
                     @auth
-                        <form action="{{ route('donasi.store') }}" method="POST">
+                        <form id="donation-form" action="{{ route('donasi.store') }}" method="POST">
                             @csrf
                             <input type="hidden" name="campaign_id" value="{{ $campaign->id }}">
 
@@ -223,7 +223,9 @@
                                     required>
                             </div>
 
-                            <button type="submit" class="btn btn-donasi w-100">Donasi Sekarang</button>
+                            {{-- Tombol untuk memicu modal --}}
+                            <button type="button" class="btn btn-donasi w-100" data-bs-toggle="modal"
+                                data-bs-target="#confirmDonationModal">Donasi Sekarang</button>
                         </form>
                     @else
                         <div class="text-center p-3">
@@ -235,4 +237,52 @@
             </div>
         </div>
     </div>
+
+    {{-- Modal Konfirmasi Donasi --}}
+    <div class="modal fade" id="confirmDonationModal" tabindex="-1" aria-labelledby="confirmDonationModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDonationModalLabel">Konfirmasi Donasi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Pastikan data donasi Anda sudah benar sebelum melanjutkan.</p>
+                    <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item"><strong>Nama Donatur:</strong> <span id="modal-donor-name"></span></li>
+                        <li class="list-group-item"><strong>Email:</strong> <span id="modal-donor-email"></span></li>
+                        <li class="list-group-item"><strong>Jumlah Donasi:</strong> <span id="modal-amount"></span></li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-donasi" form="donation-form">Konfirmasi Donasi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('script')
+    <script>
+        // Mengisi data modal sebelum ditampilkan
+        document.getElementById('confirmDonationModal').addEventListener('show.bs.modal', function(event) {
+            const form = document.getElementById('donation-form');
+            const donorName = form.querySelector('#donor_name').value;
+            const donorEmail = form.querySelector('#donor_email').value;
+            const amount = form.querySelector('#amount').value;
+
+            // Memformat jumlah donasi ke format Rupiah
+            const formattedAmount = new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(amount);
+
+            document.getElementById('modal-donor-name').textContent = donorName;
+            document.getElementById('modal-donor-email').textContent = donorEmail;
+            document.getElementById('modal-amount').textContent = formattedAmount;
+        });
+    </script>
 @endsection

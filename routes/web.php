@@ -136,10 +136,12 @@ Route::group(['middleware' => ['auth', 'role:0']], function () {
     Route::post('/admin/campaign/kategori/tambah-kategori', [CampaignController::class, "tambahkategori"]);
     Route::post('/admin/campaign/kategori/hapus-kategori', [CampaignController::class, "deletekategori"]);
 
-    /* Admin Transaksi */
+        /* Admin Transaksi */
     Route::get('/admin/transaksi-donasi', [TransaksiController::class, "transaksi"]);
-     // Rute untuk mengonfirmasi transaksi
+    // Rute untuk mengonfirmasi transaksi
     Route::post('/admin/transaksi/confirm', [CampaignController::class, 'confirmTransaksi'])->name('transaksi.confirm');
+    // Rute BARU untuk menolak transaksi
+    Route::post('/admin/transaksi/reject', [TransaksiController::class, 'rejectTransaksi'])->name('transaksi.reject');
 
 
     // Rute untuk halaman riwayat donasi admin

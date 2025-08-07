@@ -2,6 +2,19 @@
 @section('style')
     <link rel="stylesheet" href="/assets/extensions/datatables.net-bs5/css/dataTables.bootstrap5.min.css" />
     <link rel="stylesheet" href="/assets/css/pages/datatables.css" />
+    <style>
+        .badge-success {
+            background-color: #2ecc71 !important;
+        }
+
+        .badge-danger {
+            background-color: #e74c3c !important;
+        }
+
+        .badge-warning {
+            background-color: #f39c12 !important;
+        }
+    </style>
 @endsection
 @section('content')
     <div class="page-heading">
@@ -15,7 +28,7 @@
 
         <section class="section">
             <div class="card">
-                <div class="card-header">Riwayat Donasi yang Sudah Dikonfirmasi</div>
+                <div class="card-header">Riwayat Donasi</div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table" id="table1">
@@ -26,7 +39,9 @@
                                     <th>Judul Postingan</th>
                                     <th>Nama Penggalang Dana</th>
                                     <th>Nominal</th>
-                                    <th>Tgl. Konfirmasi</th>
+                                    <th>Status</th>
+                                    <th>Keterangan Admin</th>
+                                    <th>Tgl. Selesai</th>
                                     <th>No. Rek Penggalang</th>
                                     <th>No. WA Penggalang</th>
                                 </tr>
@@ -39,6 +54,14 @@
                                         <td>{{ $item->campaign->judul_campaign ?? 'Kampanye Tidak Ditemukan' }}</td>
                                         <td>{{ $item->campaign->kuisioner->nama ?? 'Penggalang Dana Tidak Ditemukan' }}</td>
                                         <td>Rp. {{ number_format($item->nominal, 0, ',', '.') }}</td>
+                                        <td>
+                                            @if ($item->status == 1)
+                                                <span class="badge bg-success">Sukses</span>
+                                            @elseif ($item->status == 2)
+                                                <span class="badge bg-danger">Dibatalkan</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $item->keterangan_admin ?? '-' }}</td>
                                         <td>{{ \Carbon\Carbon::parse($item->tgl_konfirmasi)->format('d-m-Y H:i:s') }}</td>
                                         <td>{{ $item->campaign->no_rekening ?? 'N/A' }}</td>
                                         <td>{{ $item->campaign->no_whatsapp ?? 'N/A' }}</td>
